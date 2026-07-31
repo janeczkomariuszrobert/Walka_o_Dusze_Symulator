@@ -1,0 +1,1 @@
+print("Walka o Dusze - symulator v0.1")
