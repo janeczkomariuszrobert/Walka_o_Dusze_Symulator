@@ -3,18 +3,46 @@ import json
 
 class Karta:
 
-    def __init__(self, imie, kolor, klasa, sila, walka_sila_ty, walka_sila_inni,wspolpraca,warunek_inni,flaga,zabija,koszt):
+    def __init__(
+        self,
+        id, imie, kolor, klasa, sila,
+        walka_sila_ty,
+        warunek_wlasny,
+        flaga_sila,
+        wspolpraca_sila,
+        typ_wspolpracy,
+        wspolpraca_limit,
+        warunek_zdolnosci,
+        warunek_wspolpraca,
+        czy_flaga,
+        zaraza,
+        zabija,
+        koszt,
+        limit_akcji,
+        mod_akcji,
+        opis_koszt
+    ):
+        self.id = id
         self.imie = imie
         self.kolor = kolor
         self.klasa = klasa
         self.sila = sila
         self.walka_sila_ty = walka_sila_ty
-        self.walka_sila_inni = walka_sila_inni
-        self.wspolpraca = wspolpraca
-        self.warunek_inni = warunek_inni
-        self.flaga = flaga
+        self.warunek_wlasny=warunek_wlasny
+        self.flaga_sila = flaga_sila
+        self.wspolpraca_sila = wspolpraca_sila
+        self.typ_wspolpracy = typ_wspolpracy
+        self.wspolpraca_limit = wspolpraca_limit
+        self.warunek_zdolnosci=warunek_zdolnosci
+        self.warunek_wspolpraca = warunek_wspolpraca
+        self.czy_flaga = czy_flaga
+        self.zaraza = zaraza
         self.zabija = zabija
         self.koszt = koszt
+        self.limit = limit_akcji
+        self.mod_akcji = mod_akcji
+        self.opis_koszt = opis_koszt
+        self.wykonana = False
 
     def __str__(self):
         return f"{self.imie} | {self.kolor} | klasa {self.klasa} | siła {self.sila}"
@@ -39,17 +67,25 @@ class Talia:
         for element in dane:
             if kolor is None or element["kolor"] == kolor:
                 karta = Karta(
+                    element["id"],
                     element["imie"],
                     element["kolor"],
                     element["klasa"],
                     element["sila"],
-                    element["walka_sila_ty"],
-                    element["walka_sila_inni"],
-                    element["wspolpraca"],
-                    element["warunek_inni"],
-                    element["flaga"],
+                    element["walka_sila_ty"]
+                    element["warunek_wlasny"]
+                    element["flaga_sila"],
+                    element["wspolpraca_sila"],
+                    element["typ_wspolpracy"],
+                    element["wspolpraca_limit"],
+                    element["warunek_wspolpraca"],
+                    element["czy_flaga"],
+                    element["zaraza"],
                     element["zabija"],
-                    element["koszt"]
+                    element["koszt"],
+                    element["limit_akcji"],
+                    element["mod_akcji"],
+                    element["opis_koszt"]
                 )
                 self.dodaj(karta)
 
@@ -91,3 +127,15 @@ class Talia:
     def kopiuj(self, inna_talia):
         for karta in inna_talia.karty:
             self.dodaj(karta)
+
+class StanAreny:
+    def __init__(self):
+        self.remis_wygrywa_bialy = False
+        self.remis_wygrywa_czarny = False
+        self.bonusy_bialy = []
+        self.bonusy_czarny = []
+        self.zabity_bialy = False
+        self.zabity_czarny = False
+
+        self.limit_wspolpracy_bialy = 0 #zero oznacza bez limitu, 1 oznacza na jedną kartę
+        self.limit_wspolpracy_czarny = 0

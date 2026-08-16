@@ -1,0 +1,41 @@
+================
+RUNDA 1
+Stan areny:
+Walka 1: Cherub 5             vs   Lucyfer 13  LOGI/log_2026-08-09_21-37-15.txt
+Walka 2: Serafin 10           vs   Zwierzchność(F) 11  LOGI/log_2026-08-09_21-37-15.txt
+Walka 3: Cherub 5             vs   Królowa Niebios 13  LOGI/log_2026-08-09_21-37-15.txt
+Walka 4: Cherub 8             vs   Władza 5  LOGI/log_2026-08-09_21-37-15.txt
+Arena Wynik: UUUW | Punkty Białych: 0 | Zwycięzca: czarny
+DEBUG Białe po bitwie: 15 1 3 0
+DEBUG Czarne po bitwie: 15 4 0 1
+DEBUG Stan chorych: 0 0
+================
+RUNDA 2
+Stan areny:
+Walka 1: Życie 12             vs   Władza 5  LOGI/log_2026-08-09_21-37-15.txt
+Walka 2: Anioł +K4            vs   Władza 7  LOGI/log_2026-08-09_21-37-15.txt
+Walka 3: Chwała Pańska(F) 15  vs   Zwierzchność 10  LOGI/log_2026-08-09_21-37-15.txt
+Walka 4: Cherub(F) 7          vs   Władza 8  LOGI/log_2026-08-09_21-37-15.txt
+Arena Wynik: ZPZR | Punkty Białych: 0 | Zwycięzca: biały
+DEBUG Białe po bitwie: 11 5 3 0
+DEBUG Czarne po bitwie: 11 6 2 5
+DEBUG Stan chorych: 0 1
+================
+RUNDA 3
+Stan areny:
+Walka 1: Cherub 6             vs   Zły Duch 1  LOGI/log_2026-08-09_21-37-15.txt
+Walka 2: Miłość(F) 13         vs   Jeźdźcy Apokalipsy 14  LOGI/log_2026-08-09_21-37-15.txt
+Walka 3: Anioł 1              vs   Śmierć 12  LOGI/log_2026-08-09_21-37-15.txt
+Walka 4: Duch Swięty 13       vs   Zły Duch +K4  LOGI/log_2026-08-09_21-37-15.txt
+Arena Wynik: ZWUZ | Punkty Białych: 0 | Zwycięzca: biały
+DEBUG Białe po bitwie: 7 8 4 0
+DEBUG Czarne po bitwie: 7 8 4 6
+DEBUG Stan chorych: 0 5
+================
+RUNDA 4
+Stan areny:
+Walka 1: Serafin(F) 11        vs   Bestia 15  LOGI/log_2026-08-09_21-37-15.txt
+Walka 2: Anioł 4              vs   Władza 6  LOGI/log_2026-08-09_21-37-15.txt
+Walka 3: Anioł 2              vs   Zły Duch 4  LOGI/log_2026-08-09_21-37-15.txt
+Walka 4: Anioł 3              vs   Zwierzchność 9  LOGI/log_2026-08-09_21-37-15.txt
+Arena Wynik: URPU | Punkty Białych: 0 | Zwycięzca: czarny

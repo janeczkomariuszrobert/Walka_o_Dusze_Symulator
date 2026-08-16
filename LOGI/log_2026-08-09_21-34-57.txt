@@ -1,0 +1,8 @@
+================
+RUNDA 1
+Stan areny: LOGI/log_2026-08-09_21-34-57.txt
+Walka 1: Miłość(F) 13         vs   Lucyfer 13  LOGI/log_2026-08-09_21-34-57.txt
+Walka 2: Serafin 10           vs   Zły Duch +K4  LOGI/log_2026-08-09_21-34-57.txt
+Walka 3: Życie 12             vs   Zły Duch 1  LOGI/log_2026-08-09_21-34-57.txt
+Walka 4: Chwała Pańska(F) 15  vs   Zwierzchność 9  LOGI/log_2026-08-09_21-34-57.txt
+Arena Wynik: WZZZ | Punkty Białych: 0 | Zwycięzca: biały LOGI/log_2026-08-09_21-34-57.txt

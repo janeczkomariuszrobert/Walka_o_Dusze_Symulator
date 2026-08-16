@@ -1,0 +1,30 @@
+================
+RUNDA 1
+Stan areny:
+Walka 1: Archanioł Michał 14  WIN vs   Zły Duch 1 
+Walka 2: Cherub 5             vs   Fałszywy Prorok(F) 13  WIN
+Walka 3: Jezus 99  WIN        vs   Zwierzchność(F) 11 
+Walka 4: Cherub(F) 7          vs   Jeźdźcy Apokalipsy 14  WIN
+Wynik: ZUZU | Punkty Białych: 0 | Zwycięzca: czarny
+DEBUG Białe po bitwie: 15 2 2 0
+DEBUG Czarne po bitwie: 15 2 2 5
+DEBUG Stan chorych: 0 0
+================
+RUNDA 2
+Stan areny:
+Walka 1: Anioł +K4            vs   Zły Duch +K4  WIN
+Walka 2: Serafin(F) 11  WIN   vs   Władza 5 
+Walka 3: Życie 12  WIN        vs   Zwierzchność 9 
+Walka 4: Anioł 3              vs   Zły Duch 3  WIN
+Wynik: PZWP | Punkty Białych: 0 | Zwycięzca: biały
+DEBUG Białe po bitwie: 11 6 2 0
+DEBUG Czarne po bitwie: 11 5 3 3
+DEBUG Stan chorych: 0 1
+================
+RUNDA 3
+Stan areny:
+Walka 1: Anioł 4              vs   Władza 7  WIN
+Walka 2: Duch Swięty 13  WIN  vs   Władza 6 
+Walka 3: Chwała Pańska(F) 15  WIN vs   Lucyfer 13 
+Walka 4: Anioł 2              vs   Władza 8  WIN
+Wynik: UZZP | Punkty Białych: 0 | Zwycięzca: biały

@@ -1,0 +1,108 @@
+================
+RUNDA 1
+Stan areny:
+Walka 1: Anioł +K4            vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 2: Jezus 99  WIN        vs   Władza 5 
+Walka 3: Cherub(F) 7  WIN     vs   Zły Duch 4 
+Walka 4: Cherub 5             vs   Śmierć 12  WIN
+Wynik: UZWU | Punkty Areny Białych: 7 | Zwycięzca Rundy: czarny
+DEBUG Białe po bitwie: 15 2 2 0
+DEBUG Czarne po bitwie: 15 3 1 0
+DEBUG Stan chorych: 0 4
+================
+RUNDA 2
+Runda bialy: uzupełnienie stosu GOTOWYCH (2)
+Runda czarny: uzupełnienie stosu GOTOWYCH (2)
+Stan areny:
+Walka 1: Życie 12  WIN        vs   Zły Duch 3 
+Walka 2: Duch Swięty 13  WIN  vs   Władza 6 
+Walka 3: Cherub 8  WIN        vs   Zły Duch 4 
+Walka 4: Serafin 10           vs   Jeźdźcy Apokalipsy 14  WIN
+Wynik: ZZZU | Punkty Areny Białych: 12 | Zwycięzca Rundy: biały
+DEBUG Białe po bitwie: 13 3 3 0
+DEBUG Czarne po bitwie: 14 1 4 0
+DEBUG Stan chorych: 0 0
+================
+RUNDA 3
+Runda bialy: uzupełnienie stosu GOTOWYCH (3)
+Runda czarny: uzupełnienie stosu GOTOWYCH (3)
+Stan areny:
+Walka 1: Cherub 6  WIN        vs   Władza 5 
+Walka 2: Miłość(F) 13  WIN    vs   Zły Duch +K4 
+Walka 3: Anioł 4  WIN         vs   Zły Duch 1 
+Walka 4: Jezus 99  WIN        vs   Jeźdźcy Apokalipsy 14 
+Wynik: ZZZZ | Punkty Areny Białych: 16 | Zwycięzca Rundy: biały
+DEBUG Białe po bitwie: 12 4 3 0
+DEBUG Czarne po bitwie: 11 0 8 0
+DEBUG Stan chorych: 0 0
+================
+RUNDA 4
+Runda bialy: uzupełnienie stosu GOTOWYCH (4)
+Stan areny:
+Walka 1: Życie 12             vs   Zwierzchność(F) 11  WIN
+Walka 2: Archanioł Michał 14  WIN vs   Zły Duch 2 
+Walka 3: Cherub(F) 7          vs   Lucyfer 13  WIN
+Walka 4: Chwała Pańska(F) 15  WIN vs   Fałszywy Prorok(F) 13 
+Wynik: PZUZ | Punkty Areny Białych: 9 | Zwycięzca Rundy: biały
+DEBUG Białe po bitwie: 12 3 4 1
+DEBUG Czarne po bitwie: 7 2 10 0
+DEBUG Stan chorych: 0 0
+================
+RUNDA 5
+Runda bialy: uzupełnienie stosu GOTOWYCH (5)
+Runda czarny: uzupełnienie stosu GOTOWYCH (5)
+Zwycięzca rundy ustalony kością
+Stan areny:
+Walka 1: Serafin(F) 11  WIN   vs   Władza 8 
+Walka 2: Cherub 5             vs   Bestia 15  WIN
+Walka 3: Chwała Pańska(F) 15  WIN vs   Śmierć 12 
+Walka 4: Anioł 3              vs   Zwierzchność 9  WIN
+Wynik: ZUZU | Punkty Areny Białych: 8 | Zwycięzca Rundy: czarny
+DEBUG Białe po bitwie: 11 2 6 1
+DEBUG Czarne po bitwie: 5 2 12 3
+DEBUG Stan chorych: 0 0
+================
+RUNDA 6
+Runda bialy: uzupełnienie stosu GOTOWYCH (6)
+Runda czarny: uzupełnienie stosu GOTOWYCH (6)
+Stan areny:
+Walka 1: Chwała Pańska(F) 15  WIN vs   Zwierzchność(F) 11 
+Walka 2: Serafin 9  WIN       vs   Lucyfer 13 
+Walka 3: Miłość(F) 13  WIN    vs   Władza 7 
+Walka 4: Cherub 6             vs   Królowa Niebios 13 
+Wynik: ZZZR | Punkty Areny Białych: 14 | Zwycięzca Rundy: biały
+DEBUG Białe po bitwie: 9 4 6 2
+DEBUG Czarne po bitwie: 3 1 15 4
+DEBUG Stan chorych: 0 0
+================
+RUNDA 7
+Runda bialy: uzupełnienie stosu GOTOWYCH (7)
+Stan areny:
+Walka 1: Chwała Pańska(F) 15  WIN vs   Zwierzchność 10 
+Walka 2: Anioł 2              vs   Zwierzchność 9  WIN
+Walka 3: Duch Swięty 13  WIN  vs   Bestia 15 
+Walka 4: Cherub 6  WIN        vs   ---
+Wynik: ZUZW | Punkty Areny Białych: 11 | Zwycięzca Rundy: biały
+Runda czarny: uzupełnienie stosu GOTOWYCH (7)
+DEBUG Białe po bitwie: 9 3 7 3
+DEBUG Czarne po bitwie: 1 1 17 5
+DEBUG Stan chorych: 0 0
+Koniec gry - Biały zrealizował cel
+
+Białe karty które przeżyły:
+11 Serafin 9
+10 Cherub 8
+4 Anioł 4
+13 Serafin 11
+19 Jezus 99
+15 Miłość 13
+1 Anioł 1
+14 Życie 12
+16 Archanioł Michał 14
+18 Chwała Pańska 15
+17 Duch Swięty 13
+8 Cherub 6
+
+Czarne karty które przeżyły:
+15 Królowa Niebios 13
+11 Zwierzchność 9

@@ -1,0 +1,153 @@
+================
+RUNDA 1
+Stan areny:
+Walka 1: Duch Swięty 13  WIN  vs   Władza 5 
+Walka 2: Anioł 2              vs   Władza 7  WIN
+Walka 3: Chwała Pańska(F) 15  WIN vs   Zły Duch +K4 
+Walka 4: Cherub 8             vs   Królowa Niebios 13  WIN
+Wynik: ZUZU | Punkty Areny Białych: 8 | Zwycięzca Rundy: biały
+Podsumowanie Rundy - Białe:  Got  15 Odp  2 Martwe:  2 Zabite karty Spec:  0
+Podsumowanie Rundy - Czarne:  Got  15 Odp  2 Martwe:  2 Zabite pionki  2
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 2
+Stan areny:
+Walka 1: Jezus 99  WIN        vs   Fałszywy Prorok(F) 13 
+Walka 2: Anioł +K4            vs   Zły Duch 3  WIN
+Walka 3: Serafin 9  WIN       vs   Władza 6 
+Walka 4: Archanioł Michał 14  vs   Zwierzchność(F) 11 
+Wynik: ZUWR | Punkty Areny Białych: 9 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (2)
+Runda czarny: uzupełnienie stosu GOTOWYCH (2)
+Podsumowanie Rundy - Białe:  Got  13 Odp  3 Martwe:  3 Zabite karty Spec:  1
+Podsumowanie Rundy - Czarne:  Got  13 Odp  3 Martwe:  3 Zabite pionki  3
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 3
+Stan areny:
+Walka 1: Cherub(F) 7          vs   Śmierć 12  WIN
+Walka 2: Serafin(F) 11  WIN   vs   Zły Duch 4 
+Walka 3: Serafin 10  WIN      vs   Władza 7 
+Walka 4: Cherub 6  WIN        vs   Zły Duch 2 
+Wynik: PZZZ | Punkty Areny Białych: 13 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (3)
+Runda czarny: uzupełnienie stosu GOTOWYCH (3)
+Podsumowanie Rundy - Białe:  Got  12 Odp  4 Martwe:  3 Zabite karty Spec:  1
+Podsumowanie Rundy - Czarne:  Got  12 Odp  1 Martwe:  6 Zabite pionki  1
+Stan chorych:  Poprzednia:  0 Aktualna:  5
+================
+RUNDA 4
+Stan areny:
+Walka 1: Archanioł Michał 14  WIN vs   Władza 6 
+Walka 2: Serafin 9  WIN       vs   Władza 8 
+Walka 3: Jezus 99  WIN        vs   Bestia 15 
+Walka 4: Życie 12             vs   Królowa Niebios 13  WIN
+Wynik: ZWZP | Punkty Areny Białych: 12 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (4)
+Runda czarny: uzupełnienie stosu GOTOWYCH (4)
+Podsumowanie Rundy - Białe:  Got  12 Odp  4 Martwe:  3 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  9 Odp  2 Martwe:  8 Zabite pionki  2
+Stan chorych:  Poprzednia:  3 Aktualna:  0
+================
+RUNDA 5
+Stan areny:
+Walka 1: Miłość(F) 13  WIN    vs   Zły Duch 1 
+Walka 2: Cherub(F) 7          vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 3: Serafin 10  WIN      vs   Zły Duch 3 
+Walka 4: Cherub 5             vs   Lucyfer 13  WIN
+Wynik: ZUZU | Punkty Areny Białych: 8 | Zwycięzca Rundy: czarny
+Runda czarny: uzupełnienie stosu GOTOWYCH (5)
+Runda bialy: uzupełnienie stosu GOTOWYCH (5)
+Podsumowanie Rundy - Białe:  Got  12 Odp  2 Martwe:  5 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  7 Odp  2 Martwe:  10 Zabite pionki  9
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 6
+Stan areny:
+Walka 1: Życie 12  WIN        vs   Władza 5 
+Walka 2: Serafin 9  WIN       vs   Zwierzchność 9 
+Walka 3: Anioł 3  WIN         vs   Władza 8 
+Walka 4: Chwała Pańska(F) 15  WIN vs   Śmierć 12 
+Wynik: ZZWZ | Punkty Areny Białych: 15 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (6)
+Runda czarny: uzupełnienie stosu GOTOWYCH (6)
+Podsumowanie Rundy - Białe:  Got  10 Odp  4 Martwe:  5 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  5 Odp  1 Martwe:  13 Zabite pionki  10
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 7
+Stan areny:
+Walka 1: Archanioł Michał 14  WIN vs   Lucyfer 13 
+Walka 2: Anioł 4              vs   Zwierzchność(F) 11  WIN
+Walka 3: Cherub 5             vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 4: Jezus 99  WIN        vs   Królowa Niebios 13 
+Wynik: WUUZ | Punkty Areny Białych: 7 | Zwycięzca Rundy: czarny
+Runda czarny: uzupełnienie stosu GOTOWYCH (7)
+Runda bialy: uzupełnienie stosu GOTOWYCH (7)
+Podsumowanie Rundy - Białe:  Got  10 Odp  2 Martwe:  7 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  2 Odp  3 Martwe:  14 Zabite pionki  15
+Stan chorych:  Poprzednia:  0 Aktualna:  1
+================
+RUNDA 8
+Runda czarny: uzupełnienie stosu GOTOWYCH (8)
+Stan areny:
+Walka 1: Życie 12  WIN        vs   Władza 8 
+Walka 2: Anioł 3              vs   Zwierzchność(F) 11  WIN
+Walka 3: Cherub 6             vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 4: Duch Swięty 13  WIN  vs   Lucyfer 13 
+Wynik: ZUUW | Punkty Areny Białych: 7 | Zwycięzca Rundy: czarny
+Runda bialy: uzupełnienie stosu GOTOWYCH (8)
+Podsumowanie Rundy - Białe:  Got  8 Odp  2 Martwe:  9 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  1 Odp  3 Martwe:  15 Zabite pionki  19
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 9
+Runda czarny: uzupełnienie stosu GOTOWYCH (9)
+Stan areny:
+Walka 1: Serafin(F) 11        vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 2: Jezus 99  WIN        vs   Zwierzchność(F) 11 
+Walka 3: Archanioł Michał 14  WIN vs   Lucyfer 13 
+Walka 4: Chwała Pańska(F) 15  WIN vs   Zwierzchność 10 
+Wynik: UZWZ | Punkty Areny Białych: 11 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (9)
+Podsumowanie Rundy - Białe:  Got  6 Odp  3 Martwe:  10 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  0 Odp  2 Martwe:  17 Zabite pionki  23
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 10
+Runda czarny: uzupełnienie stosu GOTOWYCH (10)
+Stan areny:
+Walka 1: Anioł 1              vs   Lucyfer 13  WIN
+Walka 2: Serafin 9            vs   Jeźdźcy Apokalipsy 14  WIN
+Walka 3: Duch Swięty 13  WIN  vs   ---
+Walka 4: Serafin 10  WIN      vs   ---
+Wynik: UUWW | Punkty Areny Białych: 6 | Zwycięzca Rundy: czarny
+Runda bialy: uzupełnienie stosu GOTOWYCH (10)
+Podsumowanie Rundy - Białe:  Got  5 Odp  2 Martwe:  12 Zabite karty Spec:  2
+Podsumowanie Rundy - Czarne:  Got  0 Odp  2 Martwe:  17 Zabite pionki  28
+Stan chorych:  Poprzednia:  0 Aktualna:  0
+================
+RUNDA 11
+Runda czarny: uzupełnienie stosu GOTOWYCH (11)
+Stan areny:
+Walka 1: Miłość(F) 13  WIN    vs   Lucyfer 13 
+Walka 2: Jezus 99  WIN        vs   Jeźdźcy Apokalipsy 14 
+Walka 3: Archanioł Michał 14  WIN vs   ---
+Walka 4: Chwała Pańska(F) 15  WIN vs   ---
+Wynik: ZZWW | Punkty Areny Białych: 14 | Zwycięzca Rundy: biały
+Runda bialy: uzupełnienie stosu GOTOWYCH (11)
+Podsumowanie Rundy - Białe:  Got  3 Odp  4 Martwe:  12 Zabite karty Spec:  3
+Podsumowanie Rundy - Czarne:  Got  0 Odp  0 Martwe:  19 Zabite pionki  29
+Stan chorych:  Poprzednia:  0 Aktualna:  2
+Koniec gry - Biały zrealizował cel
+
+Białe karty które przeżyły:
+14 Życie 12
+12 Serafin 10
+17 Duch Swięty 13
+15 Miłość 13
+19 Jezus 99
+16 Archanioł Michał 14
+18 Chwała Pańska 15
+
+Czarne karty które przeżyły:

@@ -1,0 +1,29 @@
+================
+RUNDA 1
+Stan areny:
+Walka 1: Cherub 5             vs   Zwierzchność 10 
+Walka 2: Serafin 10           vs   Królowa Niebios 13 
+Walka 3: Cherub 6             vs   Władza 7 
+Walka 4: Miłość(F) 13         vs   Bestia 15 
+Arena Wynik: UPWU | Punkty Białych: 0 | Zwycięzca: czarny
+DEBUG Białe po bitwie: 15 2 2 0
+DEBUG Czarne po bitwie: 15 4 0 11
+DEBUG Stan chorych: 0 0
+================
+RUNDA 2
+Stan areny:
+Walka 1: Serafin 9            vs   Zwierzchność(F) 11 
+Walka 2: Cherub(F) 7          vs   Jeźdźcy Apokalipsy 14 
+Walka 3: Anioł 3              vs   Władza 6 
+Walka 4: Chwała Pańska(F) 15  vs   Zwierzchność 9 
+Arena Wynik: UUUZ | Punkty Białych: 0 | Zwycięzca: czarny
+DEBUG Białe po bitwie: 11 3 5 0
+DEBUG Czarne po bitwie: 11 7 1 22
+DEBUG Stan chorych: 0 0
+================
+RUNDA 3
+Stan areny:
+Walka 1: Anioł 1              vs   Fałszywy Prorok(F) 13 
+Walka 2: Jezus 99999          vs   Zły Duch 3 
+Walka 3: Duch Swięty 13       vs   Zły Duch 1 
+Walka 4: Anioł 2              vs   Władza 8 
