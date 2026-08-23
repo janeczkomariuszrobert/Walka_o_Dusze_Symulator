@@ -1,0 +1,5 @@
+Nie znalazlem warunku
+DEBUG: Biale bonus:  0 0 0 0
+DEBUG: Czarne bonus:  0 0 0 0
+DEBUG: Biale bonus:  0 0 0 0
+DEBUG: Czarne bonus:  0 0 0 1

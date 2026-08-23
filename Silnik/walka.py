@@ -1,19 +1,9 @@
 from Silnik.obiekty import *
 from Silnik.mechanika import *
 
-def policz_bonus_flag( karty_aktyw ):  #karty_aktyw jest listą kart aktywnych na arenie
-    bonus = 0
-    for karta in karty_aktyw:
-        if karta.czy_flaga == "tak":
-            bonus += interpretuj_parametr(karta.flaga_sila)[0]
-    return bonus
 
-def policz_sile_walki(karta, bonus_areny):
-    sila = interpretuj_parametr(karta.sila)[0]
-    sila += interpretuj_parametr(karta.walka_sila_ty)[0]
-    sila += bonus_areny
-    sila += rzut_k(4)
-    return sila
+
+
 
 def walka_kart(
     karta_biala,
@@ -24,15 +14,18 @@ def walka_kart(
     bonus_bialy,
     bonus_czarny,
     specjalna_wlasna_biala,
-    specjalna_wlasna_czarna
+    specjalna_wlasna_czarna,
+    rzut_kostka
 ):
     sila_biala = policz_sile_walki(
         karta_biala,
-        bonus_bialy
+        bonus_bialy,
+        rzut_kostka
     )
     sila_czarna = policz_sile_walki(
         karta_czarna,
-        bonus_czarny
+        bonus_czarny,
+        rzut_kostka
     )
 
     #wynik identyfikujemy od storny białego
@@ -52,13 +45,13 @@ def walka_kart(
     prog_b = 4 if karta_biala.wspolpraca_sila in ("T", "RT") else 3
 
     if sila_biala == sila_czarna:
-        if karta_biala.walka_sila_ty in ("R", "RT") or remis_bialy==True or (specjalna_wlasna_biala == "W" and specjalna_wlasna_czarna != "W"):  #biały wygrywa mimo remisu
+        if karta_biala.walka_zdolnosc in ("R", "RT") or remis_bialy==True or (specjalna_wlasna_biala == "W" and specjalna_wlasna_czarna != "W"):  #biały wygrywa mimo remisu
             return {
                 "wynik": "W",
                 "biala_zyje": True,
                 "czarna_zyje": True
             }
-        if karta_czarna.walka_sila_ty in ("R", "RT") or remis_czarny==True or (specjalna_wlasna_czarna == "W" and specjalna_wlasna_biala != "W"): #czarny wygrywa mimo remisu
+        if karta_czarna.walka_zdolnosc in ("R", "RT") or remis_czarny==True or (specjalna_wlasna_czarna == "W" and specjalna_wlasna_biala != "W"): #czarny wygrywa mimo remisu
             return {
                 "wynik": "P",
                 "biala_zyje": True,
@@ -81,7 +74,7 @@ def walka_kart(
                 "czarna_zyje": True
             }
         elif roznica >= prog_cz:          
-            if karta_czarna.walka_sila_ty == "Z2":
+            if karta_czarna.walka_zdolnosc == "Z2":
                 if rzut_k(2) == 2:
                     # czarna przeżyła
                     return {
@@ -89,7 +82,7 @@ def walka_kart(
                         "biala_zyje": True,
                         "czarna_zyje": True 
                     }
-            elif karta_czarna.walka_sila_ty == "Z4" and karta_biala.id != 19: #jezeli nie walczysz z Jezusem
+            elif karta_czarna.walka_zdolnosc == "Z4" and karta_biala.id != 19: #jezeli nie walczysz z Jezusem
                 if rzut_k(4) == 4:
                     # czarna przeżyła
                     return {
@@ -122,7 +115,7 @@ def walka_kart(
         elif roznica >= prog_b:
             return {
                 "wynik": "U",
-                "biala_zyje": karta_biala.walka_sila_ty == "n", #jezeli jest 'n' to wynik bedize TRUE wiec bedzie zyc, w przeciwnym wypadku FALSE czyli umiera
+                "biala_zyje": karta_biala.walka_zdolnosc == "n", #jezeli jest 'n' to wynik bedize TRUE wiec bedzie zyc, w przeciwnym wypadku FALSE czyli umiera
                 "czarna_zyje": True
             }
         else:
@@ -152,13 +145,23 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
     biale_zabite = Talia()
     czarne_zabite = Talia()
 
-    biale_sojusznicy = biale_karty.karty.copy()
-    czarne_sojusznicy = czarne_karty.karty.copy()
+    biale_sojusznicy = Talia()
+    czarne_sojusznicy = Talia()
 
+    biale_sojusznicy.kopiuj(biale_karty)
+    czarne_sojusznicy.kopiuj(czarne_karty)
+
+
+    #--------Zdolnosci PRZED walką-----
+    #SR to mozliwość zmiany pozycji "Super Ruch"
+    wykonaj_zdolnosci_SR(biale_karty, czarne_karty)
+    #SP to mozliwość poświecenia karty w zamian za bonus "Super Poświęcenie"
+    bonus_sp_bialy,bonus_sp_czarny=wykonaj_zdolnosc_SP(biale_karty,czarne_karty,biale_zabite,czarne_zabite,biale_zywe,czarne_zywe,biale_aktywne,czarne_aktywne)
+    
+
+
+    #------PETLA GLOWNA PO SLOTACH ARENY-------------------
     for i in range(LICZBA_SLOTOW_ARENY):
-
-        karta_biala = biale_karty.karty[i]
-        karta_czarna = czarne_karty.karty[i]
 
         bonus_wlasny_bialy = 0      
         bonus_wlasny_czarny = 0
@@ -167,23 +170,55 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
 
         if i < len(biale_karty.karty) and i < len(czarne_karty.karty):
 
+            karta_biala = biale_karty.karty[i]
+            karta_czarna = czarne_karty.karty[i]
+
+            #-----Anioł 2------------------------
+            if karta_biala.id == 2 and karta_biala.kolor == "biały": 
+                kandydaci = [
+                    karta for karta in biale_zabite.karty #szukamy żywego sojusznika, który już zginął
+                    if karta.klasa > 1
+                ]
+                if kandydaci:
+                    kandydat = max(kandydaci, key=lambda karta: (karta.klasa, karta.sila))
+                    biale_zabite.dodaj(karta_biala) #ANIOŁ umiera zamiast sojusznika
+                    biale_zywe.dodaj(kandydat)
+                    biale_zabite.usun(kandydat)
+                    wyniki.append("U") #Przeciwnik wygrywa
+                    biale_aktywne.usun(karta_biala)
+                    continue
+            #--------------------------------------        
+
+
             #aktualni sojusznicy (karta walcząca nie liczy sie)
             sojusznicy_bialego = [
-                karta for karta in biale_sojusznicy
+                karta for karta in biale_sojusznicy.karty
                 if karta != karta_biala
             ]
 
             sojusznicy_czarnego = [
-                karta for karta in czarne_sojusznicy
+                karta for karta in czarne_sojusznicy.karty
                 if karta != karta_czarna
             ]
 
-            bonus_wlasny_bialy, specjalna_wlasna_biala = oblicz_zdolnosc_wlasna(karta_biala,karta_czarna,sojusznicy_bialego)
-            bonus_wlasny_czarny, specjalna_wlasna_czarna = oblicz_zdolnosc_wlasna(karta_czarna,karta_biala,sojusznicy_czarnego)
+            bonus_wlasny_bialy, specjalna_wlasna_biala = pobierz_zdolnosc_wlasna(karta_biala,karta_czarna,sojusznicy_bialego)
+            bonus_wlasny_czarny, specjalna_wlasna_czarna = pobierz_zdolnosc_wlasna(karta_czarna,karta_biala,sojusznicy_czarnego)
+
+            bonus_wspolpracy_wlasnej_bialy = wykonaj_zdolnosc_przed_walka(karta_biala,karta_czarna,sojusznicy_bialego)
+            bonus_wspolpracy_wlasnej_czarny = wykonaj_zdolnosc_przed_walka(karta_czarna,karta_biala,sojusznicy_czarnego)
+
+            bonus_flagi_bialy=policz_bonus_flag(biale_aktywne.karty)
+            bonus_flagi_czarny=policz_bonus_flag(czarne_aktywne.karty)
+
+            bonus_wspolpracy_od_innych_biały=pobierz_bonusy_wspolpracy(stan_areny, "bialy")
+            bonus_wspolpracy_od_innych_czarny=pobierz_bonusy_wspolpracy(stan_areny, "czarny")
 
             #Fianalny bonus do sily karty
-            bonus_bialy = policz_bonus_flag(biale_aktywne.karty) + pobierz_bonusy_wspolpracy(stan_areny, "bialy") + bonus_wlasny_bialy 
-            bonus_czarny = policz_bonus_flag(czarne_aktywne.karty) + pobierz_bonusy_wspolpracy(stan_areny, "czarny") +bonus_wlasny_czarny
+            bonus_bialy =  bonus_flagi_bialy + bonus_wspolpracy_od_innych_biały + bonus_wlasny_bialy + bonus_wspolpracy_wlasnej_bialy + bonus_sp_bialy
+            bonus_czarny = bonus_flagi_czarny + bonus_wspolpracy_od_innych_czarny +bonus_wlasny_czarny + bonus_wspolpracy_wlasnej_czarny + bonus_sp_czarny
+
+            loguj('DEBUG: Biale bonus: ', bonus_flagi_bialy, bonus_wspolpracy_od_innych_biały, bonus_wlasny_bialy, bonus_wspolpracy_wlasnej_bialy)
+            loguj('DEBUG: Czarne bonus: ', bonus_flagi_czarny, bonus_wspolpracy_od_innych_czarny, bonus_wlasny_czarny, bonus_wspolpracy_wlasnej_czarny)
 
             rezultat = walka_kart(
                 karta_biala,
@@ -194,14 +229,15 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
                 bonus_bialy,
                 bonus_czarny,
                 specjalna_wlasna_biala,
-                specjalna_wlasna_czarna           
+                specjalna_wlasna_czarna,
+                True         
             )
             wyniki.append(rezultat["wynik"])
 
             if rezultat["biala_zyje"]:
                 biale_zywe.dodaj(karta_biala)
             else:
-                biale_zabite.dodaj(karta_biala)
+                biale_zabite.dodaj(karta_biala)  #to sa zabite per runda
                 biale_sojusznicy.usun(karta_biala)
 
             if rezultat["czarna_zyje"]:
@@ -212,26 +248,12 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
                 if czarne_karty.karty[i].klasa == 5:
                     statystyki["zabite_klasa5"] += 1
 
-        #----- Zdolnosci wspolpracy -------
-            # karta = karta_biala
-            # if rezultat["wynik"] in ("W", "Z") and karta.czy_wspolpraca=='tak':   
-
-            #     if karta.wspolpraca_sila=='R': #Wspolpraca karty Cherub 5
-            #         stan_areny.remis_wygrywa_bialy = True
-            #     else:
-            #         bonus, _ = interpretuj_parametr(karta.wspolpraca_sila)
-            #         stan_areny.bonus_nastepna_biala = bonus    
-
-            # elif rezultat["wynik"] in ("P", "U") and karta_czarna.czy_wspolpraca=='tak':
-            #     karta = karta_czarna
-
-            #     if karta.wspolpraca_sila=='R': #na razie nie ma takiej karty ale zostaje dla porządku kodu
-            #         stan_areny.remis_wygrywa_czarny = True
-            #     else:
-            #         bonus, _ = interpretuj_parametr(karta.wspolpraca_sila)
-            #         stan_areny.bonus_nastepna_czarna = bonus  
-
-        #-----------------------------------
+            #----- Zdolnosci wspolpracy po walce-------
+            if rezultat["wynik"] in ("W", "Z") and karta_biala.typ_wspolpracy in ("1", "3", "R"):
+                    wykonaj_zdolnosc_po_walce(karta_biala,stan_areny) #dostaw ewentualne bonusy sojusznom zwycięzcy (przez stan areny)
+            elif rezultat["wynik"] in ("P", "U") and karta_czarna.typ_wspolpracy in ("1", "3", "R"):
+                    wykonaj_zdolnosc_po_walce(karta_czarna,stan_areny)
+            #-----------------------------------
 
 
         elif i < len(biale_karty.karty):
@@ -254,7 +276,6 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
                 else:
                     biale_aktywne.usun(karta_biala)
 
-
     #dodaj punkty akcj z wpływu kart aktywnych na arenie (jeżeli mają taki wpływ)
     for karta in biale_aktywne.karty:
         statystyki["akcje_bialy"] += interpretuj_parametr(karta.mod_akcji)[0]
@@ -270,3 +291,79 @@ def walka_arena(biale_karty, czarne_karty, statystyki):
         biale_zabite,
         czarne_zabite
     )
+
+
+
+
+
+
+
+def symuluj_testowa_arena(statystyki,biale_karty,czarne_karty,biale_wybrane, czarne_wybrane):
+
+    testowe_biale = Talia()
+    testowe_czarne = Talia()
+
+    # Wybierz wskazane karty z pełnych talii
+    for id_karty in biale_wybrane:
+        for karta in biale_karty.karty:
+            if int(karta.id) == id_karty:
+                testowe_biale.dodaj(karta)
+                break
+
+    for id_karty in czarne_wybrane:
+        for karta in czarne_karty.karty:
+            if int(karta.id) == id_karty:
+                testowe_czarne.dodaj(karta)
+                break
+
+    # Sprawdzenie czy znaleziono wszystkie karty
+    if len(testowe_biale.karty) != len(biale_wybrane):
+        print("BŁĄD: Nie znaleziono wszystkich wskazanych kart białych.")
+        return
+
+    if len(testowe_czarne.karty) != len(czarne_wybrane):
+        print("BŁĄD: Nie znaleziono wszystkich wskazanych kart czarnych.")
+        return
+
+    # Stan początkowy
+    print("\n================================")
+    print("TESTOWA ARENA")
+    print("================================")
+
+    print("\nBIAŁE:")
+    for i, karta in enumerate(testowe_biale.karty):
+        print(i + 1, karta)
+
+    print("\nCZARNE:")
+    for i, karta in enumerate(testowe_czarne.karty):
+        print(i + 1, karta)
+
+    print("\n--- ROZPOCZYNAM WALKĘ ---")
+
+    # Uruchamiamy normalny silnik walki
+    wynik = walka_arena(
+        testowe_biale,
+        testowe_czarne,
+        statystyki
+    )
+
+    print("\n--- WYNIK ---")
+    print("Wyniki walk:", wynik[0])
+
+    print("\nBIAŁE ŻYWE:")
+    for karta in wynik[1].karty:
+        print(karta)
+
+    print("\nCZARNE ŻYWE:")
+    for karta in wynik[2].karty:
+        print(karta)
+
+    print("\nBIAŁE ZABITE:")
+    for karta in wynik[5].karty:
+        print(karta)
+
+    print("\nCZARNE ZABITE:")
+    for karta in wynik[6].karty:
+        print(karta)
+
+    return wynik

@@ -6,13 +6,13 @@ class Karta:
     def __init__(
         self,
         id, imie, kolor, klasa, sila,
-        walka_sila_ty,
+        walka_sila_bonus,
+        walka_zdolnosc,
         warunek_wlasny,
         flaga_sila,
         wspolpraca_sila,
         typ_wspolpracy,
-        wspolpraca_limit,
-        warunek_zdolnosci,
+        czy_wspolpraca,
         warunek_wspolpraca,
         czy_flaga,
         zaraza,
@@ -27,13 +27,13 @@ class Karta:
         self.kolor = kolor
         self.klasa = klasa
         self.sila = sila
-        self.walka_sila_ty = walka_sila_ty
+        self.walka_sila_bonus = walka_sila_bonus
+        self.walka_zdolnosc=walka_zdolnosc
         self.warunek_wlasny=warunek_wlasny
         self.flaga_sila = flaga_sila
         self.wspolpraca_sila = wspolpraca_sila
         self.typ_wspolpracy = typ_wspolpracy
-        self.wspolpraca_limit = wspolpraca_limit
-        self.warunek_zdolnosci=warunek_zdolnosci
+        self.czy_wspolpraca=czy_wspolpraca
         self.warunek_wspolpraca = warunek_wspolpraca
         self.czy_flaga = czy_flaga
         self.zaraza = zaraza
@@ -72,12 +72,13 @@ class Talia:
                     element["kolor"],
                     element["klasa"],
                     element["sila"],
-                    element["walka_sila_ty"]
-                    element["warunek_wlasny"]
+                    element["walka_sila_bonus"],
+                    element["walka_zdolnosc"],
+                    element["warunek_wlasny"],
                     element["flaga_sila"],
                     element["wspolpraca_sila"],
                     element["typ_wspolpracy"],
-                    element["wspolpraca_limit"],
+                    element["czy_wspolpraca"],
                     element["warunek_wspolpraca"],
                     element["czy_flaga"],
                     element["zaraza"],
