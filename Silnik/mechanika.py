@@ -3,7 +3,7 @@ import random
 import os
 from Silnik.obiekty import *
 
-
+LOGOWANIE = 1
 LICZBA_SLOTOW_ARENY = 4
 
 PUNKTY = {
@@ -34,7 +34,8 @@ def excel_na_json(plik_excel,plik_json):
 
 def loguj(*teksty):  #przyjmuje dowolną liczbe argumentów
     tekst = " ".join(str(x) for x in teksty)
-    print(tekst)
+    if LOGOWANIE:
+        print(tekst)
 
     with open(nazwa_logu,"a",encoding="utf-8") as plik:
         plik.write(tekst + "\n")
@@ -435,16 +436,18 @@ def sprawdz_warunek(
             for sojusznik in sojusznicy
         )
     
-    if warunek == "klasa_wrog=":
+    if warunek == "klasa_wroga=":
         return przeciwnik.klasa == karta.klasa
-    if warunek == "klasa_wrog>":
+    if warunek == "klasa_wroga>":
         return przeciwnik.klasa > karta.klasa
+    if warunek == "klasa_wroga<":
+        return przeciwnik.klasa < karta.klasa
 
     loguj('DEBUG: Nie znalazlem warunku zdolnosci wlasnej')
     return False
 
 
-def pobierz_zdolnosc_wlasna(karta, przeciwnik, sojusznicy):
+def pobierz_zdolnosc_wlasna(statystyki, karta, przeciwnik, sojusznicy):
     wynik_warunku = sprawdz_warunek(
         karta.warunek_wlasny,
         karta,
@@ -457,6 +460,8 @@ def pobierz_zdolnosc_wlasna(karta, przeciwnik, sojusznicy):
     if not wynik_warunku:
         return 0, False
 
+    zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
+
     bonus, _ = interpretuj_parametr(karta.walka_sila_bonus)
     zdolnosc = karta.walka_zdolnosc
 
@@ -466,13 +471,16 @@ def pobierz_zdolnosc_wlasna(karta, przeciwnik, sojusznicy):
     return bonus, zdolnosc
 
 
-def wykonaj_zdolnosc_po_walce(karta,stan_areny):
+def wykonaj_zdolnosc_po_walce(wynik, karta, stan_areny, statystyki):
+
+    if not sprawdz_warunek(karta.warunek_wspolpracy, karta, None, None, wynik, None):
+        return
+
+    zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
     sila, specjalna = interpretuj_parametr(karta.wspolpraca_sila)
+
     if karta.typ_wspolpracy in ("1", "3"):
-        bonus = {
-            "sila": sila,
-            "pozostalo": int(karta.typ_wspolpracy)
-        }
+        bonus = {"sila": sila, "pozostalo": int(karta.typ_wspolpracy)}
         if karta.kolor == "biały":
             stan_areny.bonusy_bialy.append(bonus)
         else:
@@ -483,7 +491,6 @@ def wykonaj_zdolnosc_po_walce(karta,stan_areny):
         else:
             stan_areny.remis_wygrywa_czarny = True
 
-
 def policz_bonus_flag( karty_aktyw ):  #karty_aktyw jest listą kart aktywnych na arenie
     bonus = 0
     for karta in karty_aktyw:
@@ -492,7 +499,7 @@ def policz_bonus_flag( karty_aktyw ):  #karty_aktyw jest listą kart aktywnych n
     return bonus
 
 
-def wykonaj_zdolnosc_przed_walka(karta, przeciwnik, sojusznicy):  #tylko te które dają wpływ dla mnie (od JA)
+def wykonaj_zdolnosc_przed_walka(statystyki,karta, przeciwnik, sojusznicy):  #tylko te które dają wpływ dla mnie (od JA)
     if karta.typ_wspolpracy != "J":
         return 0
 
@@ -506,6 +513,7 @@ def wykonaj_zdolnosc_przed_walka(karta, przeciwnik, sojusznicy):  #tylko te któ
     )
 
     if wynik_warunku:
+        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
         sila, _ = interpretuj_parametr(karta.wspolpraca_sila)
         return sila
 
@@ -603,11 +611,11 @@ def Znajdz_Kandydata_do_zamiany(
     sojusznicy_sr,
     sojusznicy_przeciwnika,
     bonus_sr,
-    bonus_przeciwnika
-):
+    bonus_przeciwnika   
+):        
     kandydat_atak = znajdz_kandydata_atak(
         przeciwnik,
-        sojusznicy_sr,
+        sojusznicy_sr,  #tu musi wejść lista, a nie krotka
         sojusznicy_przeciwnika,
         bonus_sr,
         bonus_przeciwnika
@@ -666,31 +674,55 @@ def znajdz_s(talia,arg):
 
     return None
 
-def wykonaj_zdolnosci_SR(biale_karty, czarne_karty):
+def wykonaj_zdolnosci_SR(statystyki,biale_karty,czarne_karty,pozycja_karty_sr):
 
-    # Szukamy kart SR
-    sr_bialy = znajdz_s(biale_karty,"SR")
-    sr_czarny = znajdz_s(czarne_karty,"SR")
+    if pozycja_karty_sr == 0:  #wywolanie przed walką czyli zwykly SR
+        # Szukamy kart SR
+        sr_bialy = znajdz_s(biale_karty,"SR")
+        sr_czarny = znajdz_s(czarne_karty,"SR")
 
-    # Jeżeli nie ma żadnego SR, nic nie robimy
-    if sr_bialy is None and sr_czarny is None:
-        return
-    else:
+        # Jeżeli nie ma żadnego SR, nic nie robimy
+        if sr_bialy is None and sr_czarny is None:
+            return
+
+        #Jezeli jest to obliczamy jego sojuszników bo w argumenci przyszło NONE
         if sr_bialy is not None:
             print("znalazlem bialego SR'a")
-        if sr_czarny is not None:
+        elif sr_czarny is not None:
             print("znalazlem czarnego SR'a")
 
-    # Sojusznicy nie zmienią się w wyniku zamiany
-    sojusznicy_bialego = [
-        karta for karta in biale_karty.karty
-        if karta is not sr_bialy
-    ]
+        sojusznicy_bialego = [
+            karta for karta in biale_karty.karty
+            if karta is not sr_bialy
+        ]
+        sojusznicy_czarnego = [
+            karta for karta in czarne_karty.karty
+            if karta is not sr_czarny
+        ]
 
-    sojusznicy_czarnego = [
-        karta for karta in czarne_karty.karty
-        if karta is not sr_czarny
-    ]
+    else:
+        # Szukamy kart SR+
+        sr_bialy = znajdz_s(biale_karty,"SR+")
+        sr_czarny = znajdz_s(czarne_karty,"SR+")
+
+        # Jeżeli nie ma żadnego SR+, nic nie robimy
+        if sr_bialy is None and sr_czarny is None:
+            return
+
+        #Jezeli jest to sojusznicy przyszli z argumentu
+        if sr_bialy is not None:
+            print("znalazlem bialego SR+'a")
+        elif sr_czarny is not None:
+            print("znalazlem czarnego SR+'a")
+
+        limit_klasy_bialy, _ = interpretuj_parametr(sr_bialy.warunek_wspolpraca)
+        limit_klasy_czarny, _ = interpretuj_parametr(sr_bialy.warunek_wspolpraca)
+        
+        #sojusznicy którzy jeszcze nie walczyli
+        sojusznicy_bialego = [karta for j,karta in enumerate(biale_karty.karty,1) if karta is not sr_bialy and j > pozycja_karty_sr and karta.klasa <= limit_klasy_bialy]
+        sojusznicy_czarnego = [karta for j,karta in enumerate(czarne_karty.karty,1) if karta is not sr_czarny and j > pozycja_karty_sr and karta.klasa <= limit_klasy_czarny]
+
+
 
     bonus_flagi_bialy = policz_bonus_flag(biale_karty.karty)
     bonus_flagi_czarny = policz_bonus_flag(czarne_karty.karty)
@@ -733,6 +765,7 @@ def wykonaj_zdolnosci_SR(biale_karty, czarne_karty):
                     biale_karty.karty[pozycja_kandydata],
                     biale_karty.karty[pozycja_sr]
                 )
+                zarejestruj_uzycie_zdolnosci(statystyki, sr_bialy.id, sr_bialy.kolor)
                 loguj("DEBUG SR: ZMIANA",powod," pozycja ", pozycja_sr + 1,"->", pozycja_kandydata + 1)
 
         else:
@@ -755,9 +788,11 @@ def wykonaj_zdolnosci_SR(biale_karty, czarne_karty):
                     czarne_karty.karty[pozycja_kandydata],
                     czarne_karty.karty[pozycja_sr]
                 )
+                zarejestruj_uzycie_zdolnosci(statystyki, sr_czarny.id, sr_czarny.kolor)
                 loguj("DEBUG SR: ZMIANA",powod," pozycja ", pozycja_sr + 1,"->", pozycja_kandydata + 1)
 
 def wykonaj_zdolnosc_SP(
+    statystyki,
     biale_karty,
     czarne_karty,
     biale_zabite,
@@ -777,6 +812,7 @@ def wykonaj_zdolnosc_SP(
     decyzja_bialy, decyzja_czarny,wrog_bialego_ginie,wrog_czarnego_ginie,korzysc_biala,korzysc_czarna = Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty,czarne_karty)
 
     if decyzja_bialy:
+        zarejestruj_uzycie_zdolnosci(statystyki, sp_bialy.id, sp_bialy.kolor)
         if wrog_bialego_ginie:
             pozycja_sp = biale_karty.karty.index(sp_bialy)
             przeciwnik_sp = czarne_karty.karty[pozycja_sp]
@@ -796,6 +832,7 @@ def wykonaj_zdolnosc_SP(
         bonus_bialy=0
         
     if decyzja_czarny:
+        zarejestruj_uzycie_zdolnosci(statystyki, sp_czarny.id, sp_czarny.kolor)
         if wrog_czarnego_ginie:
             pozycja_sp = czarne_karty.karty.index(sp_czarny)
             przeciwnik_sp = biale_karty.karty[pozycja_sp]
@@ -980,3 +1017,23 @@ def policz_sile_walki(karta, bonus_areny, rzut_kostka=True):
     if rzut_kostka:
         sila += rzut_k(4)
     return sila
+
+def zarejestruj_uzycie_zdolnosci(statystyki, id_karty, kolor, numer_zdolnosci=1):
+    klucz = (id_karty, kolor)
+    if numer_zdolnosci == 1:
+        statystyki["zdolnosci"][klucz]["zdolnosc1"] += 1
+    elif numer_zdolnosci == 2:
+        statystyki["zdolnosci"][klucz]["zdolnosc2"] += 1
+
+def zarejestruj_wynik_karty(statystyki, karta_biala, karta_czarna, wynik):
+    klucz_bialy = (karta_biala.id, karta_biala.kolor)
+    klucz_czarny = (karta_czarna.id, karta_czarna.kolor)
+    statystyki["wyniki_kart"][klucz_bialy][wynik] += 1
+    odwrotny_wynik = {
+        "W": "P",
+        "P": "W",
+        "R": "R",
+        "Z": "U",
+        "U": "Z"
+    }
+    statystyki["wyniki_kart"][klucz_czarny][odwrotny_wynik[wynik]] += 1

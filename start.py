@@ -32,7 +32,9 @@ statystyki = {
     "koszt_odnowy_bialy": STARTOWY_KOSZT_ODNOWY,
     "koszt_odnowy_czarny": STARTOWY_KOSZT_ODNOWY,
     "Smierc_zyje": 'TAK',
-    "Laska_zyje": 'TAK'
+    "Laska_zyje": 'TAK',
+    "zdolnosci": {},
+    "wyniki_kart": {}
 }
 
 biale_gotowe = Talia()
@@ -47,6 +49,22 @@ excel_na_json("DANE/karty_v1.xlsx","DANE/karty_v1.json")
 
 biale_gotowe.wczytaj("DANE/karty_v1.json", "biały")
 czarne_gotowe.wczytaj("DANE/karty_v1.json", "czarny")
+
+
+#deklaracja struktury licznika zdolnosci i wynikow. None oznacza braka zdolnosci
+for karta in biale_gotowe.karty + czarne_gotowe.karty:
+    klucz = (karta.id, karta.kolor)
+    if klucz==(14,"biały"): # ŻYCIE
+        statystyki["zdolnosci"][klucz] = {"zdolnosc1": 0,"zdolnosc2": 0}
+    elif klucz==(10,"biały"): # JEZUS
+        statystyki["zdolnosci"][klucz] = {"zdolnosc1": None,"zdolnosc2": None}
+    else:
+        statystyki["zdolnosci"][klucz] = {"zdolnosc1": 0,"zdolnosc2": None}
+
+    statystyki["wyniki_kart"][klucz] = {"Z": 0,"W": 0,"R": 0,"P": 0,"U": 0}    
+
+
+
 
 
 symuluj_testowa_arena(
