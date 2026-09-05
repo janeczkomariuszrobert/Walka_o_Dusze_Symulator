@@ -1,7 +1,10 @@
 import pandas as pd
+from tabulate import tabulate
 import random
 import os
+import csv
 from Silnik.obiekty import *
+import traceback
 
 LOGOWANIE = 1
 LICZBA_SLOTOW_ARENY = 4
@@ -20,8 +23,9 @@ def ustaw_log(nowy_log):  #przeniesienie zmiennej globalnej z pliku START.py
     global nazwa_logu
     nazwa_logu = nowy_log
 
-
-def excel_na_json(plik_excel,plik_json):
+def excel_na_json(sciezka):
+    plik_excel = sciezka + ".xlsx"
+    plik_json = sciezka + ".json"
     if os.path.exists(plik_json):
         czas_excel = os.path.getmtime(plik_excel)
         czas_json = os.path.getmtime(plik_json)
@@ -39,6 +43,56 @@ def loguj(*teksty):  #przyjmuje dowolną liczbe argumentów
 
     with open(nazwa_logu,"a",encoding="utf-8") as plik:
         plik.write(tekst + "\n")
+
+def zapisz_wyniki_csv(statystyki, białe_gotowe, czarne_gotowe, sciezka):
+    sciezka_wynikow = sciezka + ".csv"
+    wszystkie_karty = białe_gotowe.karty + czarne_gotowe.karty
+    karty = {(karta.id, karta.kolor): karta for karta in wszystkie_karty}
+
+    with open(sciezka_wynikow, "w", newline="", encoding="utf-8-sig") as plik:
+        pola = ["id","kolor","imie","sila","zdolnosc1","zdolnosc2","liczba_walk","Z","W","R","P","U","wskrzesz"]
+        writer = csv.DictWriter(plik, fieldnames=pola, delimiter=";")
+        writer.writeheader()
+
+        for klucz in statystyki["wyniki_kart"]:
+            id_karty, kolor = klucz
+            karta = karty[klucz]
+            zdolnosci = statystyki["zdolnosci"][klucz]
+            wyniki = statystyki["wyniki_kart"][klucz]
+
+            writer.writerow({
+                "id": id_karty,
+                "kolor": kolor,
+                "imie": karta.imie,
+                "sila": karta.sila,
+                "zdolnosc1": zdolnosci["zdolnosc1"],
+                "zdolnosc2": zdolnosci["zdolnosc2"],
+                "liczba_walk": wyniki["liczba_walk"],
+                "Z": wyniki["Z"],
+                "W": wyniki["W"],
+                "R": wyniki["R"],
+                "P": wyniki["P"],
+                "U": wyniki["U"],
+                "wskrzesz": wyniki["wskrzesz"]
+            })
+    loguj("Wyniki zapisane:", sciezka_wynikow)
+
+
+def pokaz_wyniki_csv(sciezka, białe_wybrane, czarne_wybrane):
+    dane = pd.read_csv(sciezka + ".csv", sep=";")
+    wybrane = dane[((dane["kolor"] == "biały") & (dane["id"].isin(białe_wybrane))) | ((dane["kolor"] == "czarny") & (dane["id"].isin(czarne_wybrane)))].copy()
+    kolejnosc = [("biały", id_karty) for id_karty in białe_wybrane] + [("czarny", id_karty) for id_karty in czarne_wybrane]
+    mapa_kolejnosci = {para: i for i, para in enumerate(kolejnosc)}
+    wybrane["kolejnosc"] = [mapa_kolejnosci[(kolor, id_karty)] for kolor, id_karty in zip(wybrane["kolor"], wybrane["id"])]
+    wybrane = wybrane.sort_values("kolejnosc").drop(columns="kolejnosc")
+    print(tabulate(wybrane, headers="keys", tablefmt="rounded_outline", showindex=False))
+
+
+
+#########################################################################################################################3
+
+def pobierz_karta(lista, numer_slotu):  #przesunięcie indeksu na potrzeby: Slot areny = 1–4. Indeks listy = 0–3.
+    return lista[numer_slotu - 1]
 
 def uzupelnij_gotowe(gotowe, odpoczywajace, kolor,runda):
     if len(odpoczywajace.karty) == 0:
@@ -112,7 +166,7 @@ def wybierz_karte_na_walkower(karty, liczba_pustych, gracz):
             brakujace = liczba_pustych - len(wybrane)
             wybrane += pozostale[:brakujace]
     else:
-        # Biały zawsze wybiera najsłabsze karty
+        # biały zawsze wybiera najsłabsze karty
         wybrane = sorted(
             karty.karty,
             key=lambda karta: interpretuj_parametr(karta.sila)[0]
@@ -124,21 +178,21 @@ def wybierz_karte_na_walkower(karty, liczba_pustych, gracz):
     #     )
     return wybrane
 
-def ustaw_puste_sloty(biale_na_arenie, czarne_na_arenie):
-    if len(biale_na_arenie.karty) > len(czarne_na_arenie.karty):
-        liczba_pustych = len(biale_na_arenie.karty) - len(czarne_na_arenie.karty)
+def ustaw_puste_sloty(białe_na_arenie, czarne_na_arenie):
+    if len(białe_na_arenie.karty) > len(czarne_na_arenie.karty):
+        liczba_pustych = len(białe_na_arenie.karty) - len(czarne_na_arenie.karty)
         wybrane = wybierz_karte_na_walkower(
-            biale_na_arenie,
+            białe_na_arenie,
             liczba_pustych,
-            "bialy"
+            "biały"
         )
         pozostale = [
-            karta for karta in biale_na_arenie.karty
+            karta for karta in białe_na_arenie.karty
             if karta not in wybrane
         ]
-        biale_na_arenie.karty = pozostale + wybrane
-    elif len(czarne_na_arenie.karty) > len(biale_na_arenie.karty):
-        liczba_pustych = len(czarne_na_arenie.karty) - len(biale_na_arenie.karty)
+        białe_na_arenie.karty = pozostale + wybrane
+    elif len(czarne_na_arenie.karty) > len(białe_na_arenie.karty):
+        liczba_pustych = len(czarne_na_arenie.karty) - len(białe_na_arenie.karty)
         wybrane = wybierz_karte_na_walkower(
             czarne_na_arenie,
             liczba_pustych,
@@ -184,7 +238,7 @@ def wykonaj_akcje_pionkow(statystyki,gracz):
         akcje -= 1
     while akcje > 0:  # EWANGELIZACJA / KUSZENIE
         if rzut_k(4) == 4:  # 25% szansy na sukces
-            if gracz == "bialy":
+            if gracz == "biały":
                 ulecz_chorych(statystyki,1)
             else:
                 statystyki["chorzy_biezaca"] += 1
@@ -252,7 +306,7 @@ def wykonaj_efekt_karty(karta,statystyki):
             statystyki["chorzy_biezaca"] += zaraza
     if zaraza < 0:
         if czy_test_zaraza:
-            if wykonaj_test(statystyki, "bialy"):  #test na leczenie:
+            if wykonaj_test(statystyki, "biały"):  #test na leczenie:
                 ulecz_chorych(statystyki, -zaraza)
         else:
             ulecz_chorych(statystyki, -zaraza)
@@ -283,19 +337,19 @@ def wykonaj_akcje_albo(karta,karty,statystyki,gracz):
             statystyki["zabite_pionki"] += efekt
             wykonane += 1
 
-def ustal_zwyciezce_rundy(punkty,biale_aktywne,czarne_aktywne):
+def ustal_zwyciezce_rundy(punkty,białe_aktywne,czarne_aktywne):
     if punkty > 8:
         return "biały"
     if punkty < 8:
         return "czarny"
 
     # remis punktowy areny
-    suma_bialych = sum(karta.klasa for karta in biale_aktywne.karty)
+    suma_białych = sum(karta.klasa for karta in białe_aktywne.karty)
     suma_czarnych = sum(karta.klasa for karta in czarne_aktywne.karty)
 
-    if suma_bialych > suma_czarnych:
+    if suma_białych > suma_czarnych:
         return "biały"
-    if suma_czarnych > suma_bialych:
+    if suma_czarnych > suma_białych:
         return "czarny"
 
     # absolutny remis
@@ -343,18 +397,18 @@ def oblicz_limit_akcji(karta,aktywne,gracz,opcja=0):
 
     return limit
 
-def loguj_stan_areny(biale_na_arenie,czarne_na_arenie,biale_aktywne,czarne_aktywne):
+def loguj_stan_areny(białe_na_arenie,czarne_na_arenie,białe_aktywne,czarne_aktywne):
     loguj("Stan areny:")
 
     for i in range(4):
-        if i < len(biale_na_arenie.karty):
-            karta = biale_na_arenie.karty[i]
+        if i < len(białe_na_arenie.karty):
+            karta = białe_na_arenie.karty[i]
             flaga = "(F)" if karta.flaga=='tak' else ""
-            biala = f"{karta.imie}{flaga} {karta.sila} "
-            if biale_aktywne is not None and karta in biale_aktywne.karty:
-                biala = f"{biala} WIN"
+            biała = f"{karta.imie}{flaga} {karta.sila} "
+            if białe_aktywne is not None and karta in białe_aktywne.karty:
+                biała = f"{biała} WIN"
         else:
-            biala = "---"
+            biała = "---"
 
         if i < len(czarne_na_arenie.karty):
             karta = czarne_na_arenie.karty[i]
@@ -365,13 +419,13 @@ def loguj_stan_areny(biale_na_arenie,czarne_na_arenie,biale_aktywne,czarne_aktyw
         else:
             czarna = "---"
 
-        loguj(f"Walka {i + 1}: {biala:<20} vs   {czarna}")
+        loguj(f"Walka {i + 1}: {biała:<20} vs   {czarna}")
 
 
 #pobiera wszystkie aktualnie aktywne bonusy współpracy dla danego koloru, sumuje ich siłę i jednocześnie zmniejsza ich pozostały czas działania.
 def pobierz_bonusy_wspolpracy(stan_areny, kolor):
-    if kolor == "bialy":
-        bonusy = stan_areny.bonusy_bialy  #to jest lista
+    if kolor == "biały":
+        bonusy = stan_areny.bonusy_biały  #to jest lista
     else:
         bonusy = stan_areny.bonusy_czarny
 
@@ -385,8 +439,8 @@ def pobierz_bonusy_wspolpracy(stan_areny, kolor):
 
             if bonus["pozostalo"] > 0:
                 pozostale.append(bonus)
-    if kolor == "bialy":
-        stan_areny.bonusy_bialy = pozostale
+    if kolor == "biały":
+        stan_areny.bonusy_biały = pozostale
     else:
         stan_areny.bonusy_czarny = pozostale
     return suma
@@ -400,8 +454,8 @@ def sprawdz_warunek(
     wynik,
     byla_smierc_wroga
 ):
-    if not warunek: #musi byc podany warunek
-        return True
+    if not warunek: # brak warunku = brak zdolności
+        return False
     
     if warunek == "win":
         if karta.kolor == "biały":
@@ -456,12 +510,17 @@ def pobierz_zdolnosc_wlasna(statystyki, karta, przeciwnik, sojusznicy):
         None,
         None
     )
+    print('DEBUG war_wl karty ',karta.kolor,': ', wynik_warunku)
 
     if not wynik_warunku:
         return 0, False
 
-    zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
+    if isinstance(wynik_warunku, int) and not isinstance(wynik_warunku, bool):
+        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1, wynik_warunku) #jezeli warunek zwraca liczbe użyć
+    else:
+        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1, 1)
 
+    
     bonus, _ = interpretuj_parametr(karta.walka_sila_bonus)
     zdolnosc = karta.walka_zdolnosc
 
@@ -473,21 +532,27 @@ def pobierz_zdolnosc_wlasna(statystyki, karta, przeciwnik, sojusznicy):
 
 def wykonaj_zdolnosc_po_walce(wynik, karta, stan_areny, statystyki):
 
-    if not sprawdz_warunek(karta.warunek_wspolpracy, karta, None, None, wynik, None):
+    wynik_warunku=sprawdz_warunek(karta.warunek_wspolpracy, karta, None, None, wynik, None)
+
+    if not wynik_warunku:
         return
 
-    zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
+    if isinstance(wynik_warunku, int) and not isinstance(wynik_warunku, bool):
+        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1, wynik_warunku) #jezeli warunek zwraca liczbe użyć
+    else:
+        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1, 1)
+
     sila, specjalna = interpretuj_parametr(karta.wspolpraca_sila)
 
     if karta.typ_wspolpracy in ("1", "3"):
         bonus = {"sila": sila, "pozostalo": int(karta.typ_wspolpracy)}
         if karta.kolor == "biały":
-            stan_areny.bonusy_bialy.append(bonus)
+            stan_areny.bonusy_biały.append(bonus)
         else:
             stan_areny.bonusy_czarny.append(bonus)
     elif karta.typ_wspolpracy == "R":
         if karta.kolor == "biały":
-            stan_areny.remis_wygrywa_bialy = True
+            stan_areny.remis_wygrywa_biały = True
         else:
             stan_areny.remis_wygrywa_czarny = True
 
@@ -513,13 +578,16 @@ def wykonaj_zdolnosc_przed_walka(statystyki,karta, przeciwnik, sojusznicy):  #ty
     )
 
     if wynik_warunku:
-        zarejestruj_uzycie_zdolnosci(statystyki, karta.id, karta.kolor, 1)
+        if isinstance(wynik_warunku, int) and not isinstance(wynik_warunku, bool):
+            ile_razy = wynik_warunku
+        else:
+            ile_razy = 1
+
+        zarejestruj_uzycie_zdolnosci(statystyki,karta.id,karta.kolor,1,ile_razy)
         sila, _ = interpretuj_parametr(karta.wspolpraca_sila)
-        return sila
+        return sila * ile_razy
 
     return 0
-
-
 
 def znajdz_kandydata_atak(
     przeciwnik,
@@ -565,7 +633,7 @@ def znajdz_kandydata_atak(
                 continue
             return kandydat
 
-    return False    
+    return None    
 
 def znajdz_kandydata_ratunek(
     sojusznicy_sr,
@@ -615,7 +683,7 @@ def Znajdz_Kandydata_do_zamiany(
 ):        
     kandydat_atak = znajdz_kandydata_atak(
         przeciwnik,
-        sojusznicy_sr,  #tu musi wejść lista, a nie krotka
+        sojusznicy_sr,  
         sojusznicy_przeciwnika,
         bonus_sr,
         bonus_przeciwnika
@@ -627,6 +695,9 @@ def Znajdz_Kandydata_do_zamiany(
         bonus_sr,
         bonus_przeciwnika
     )
+
+    loguj("DEBUG: Kandydat atak: ",kandydat_atak)
+    loguj("DEBUG: Kandydat ratunek: ",kandydat_ratunek)
 
     # 1. Ten sam kandydat realizuje oba cele
     if kandydat_atak is not None and kandydat_atak is kandydat_ratunek:
@@ -664,7 +735,7 @@ def Znajdz_Kandydata_do_zamiany(
         else:
             return kandydat_ratunek, "RATUNEK"
 
-    return None
+    return None, None
 
 
 def znajdz_s(talia,arg):
@@ -674,26 +745,26 @@ def znajdz_s(talia,arg):
 
     return None
 
-def wykonaj_zdolnosci_SR(statystyki,biale_karty,czarne_karty,pozycja_karty_sr):
+def wykonaj_zdolnosci_SR(statystyki,białe_karty,czarne_karty,pozycja_karty_sr):
 
     if pozycja_karty_sr == 0:  #wywolanie przed walką czyli zwykly SR
         # Szukamy kart SR
-        sr_bialy = znajdz_s(biale_karty,"SR")
+        sr_biały = znajdz_s(białe_karty,"SR")
         sr_czarny = znajdz_s(czarne_karty,"SR")
 
         # Jeżeli nie ma żadnego SR, nic nie robimy
-        if sr_bialy is None and sr_czarny is None:
+        if sr_biały is None and sr_czarny is None:
             return
 
         #Jezeli jest to obliczamy jego sojuszników bo w argumenci przyszło NONE
-        if sr_bialy is not None:
-            print("znalazlem bialego SR'a")
+        if sr_biały is not None:
+            print("znalazlem białego SR'a")
         elif sr_czarny is not None:
             print("znalazlem czarnego SR'a")
 
-        sojusznicy_bialego = [
-            karta for karta in biale_karty.karty
-            if karta is not sr_bialy
+        sojusznicy_białego = [
+            karta for karta in białe_karty.karty
+            if karta is not sr_biały
         ]
         sojusznicy_czarnego = [
             karta for karta in czarne_karty.karty
@@ -702,41 +773,43 @@ def wykonaj_zdolnosci_SR(statystyki,biale_karty,czarne_karty,pozycja_karty_sr):
 
     else:
         # Szukamy kart SR+
-        sr_bialy = znajdz_s(biale_karty,"SR+")
+        sr_biały = znajdz_s(białe_karty,"SR+")
         sr_czarny = znajdz_s(czarne_karty,"SR+")
 
+        if sr_biały is not None and białe_karty.karty.index(sr_biały) + 1 != pozycja_karty_sr:
+           sr_biały = None
+        if sr_czarny is not None and czarne_karty.karty.index(sr_czarny) + 1 != pozycja_karty_sr:
+           sr_czarny = None
+
         # Jeżeli nie ma żadnego SR+, nic nie robimy
-        if sr_bialy is None and sr_czarny is None:
+        if sr_biały is None and sr_czarny is None:
             return
 
         #Jezeli jest to sojusznicy przyszli z argumentu
-        if sr_bialy is not None:
-            print("znalazlem bialego SR+'a")
+        if sr_biały is not None:
+            print("znalazlem białego SR+'a")
+            limit_klasy_biały, _ = interpretuj_parametr(sr_biały.warunek_wspolpraca)
+            sojusznicy_białego =  [karta for j,karta in enumerate(białe_karty.karty,1) if karta is not sr_biały and j > pozycja_karty_sr and karta.klasa <= limit_klasy_biały]            
+            sojusznicy_czarnego = [karta for j,karta in enumerate(czarne_karty.karty,1) if karta is not sr_biały and j > pozycja_karty_sr]
         elif sr_czarny is not None:
             print("znalazlem czarnego SR+'a")
+            limit_klasy_czarny, _ = interpretuj_parametr(sr_czarny.warunek_wspolpraca)
+            sojusznicy_czarnego = [karta for j,karta in enumerate(czarne_karty.karty,1) if karta is not sr_czarny and j > pozycja_karty_sr and karta.klasa <= limit_klasy_czarny]
+            sojusznicy_białego =  [karta for j,karta in enumerate(białe_karty.karty,1) if karta is not sr_biały and j > pozycja_karty_sr]
 
-        limit_klasy_bialy, _ = interpretuj_parametr(sr_bialy.warunek_wspolpraca)
-        limit_klasy_czarny, _ = interpretuj_parametr(sr_bialy.warunek_wspolpraca)
-        
-        #sojusznicy którzy jeszcze nie walczyli
-        sojusznicy_bialego = [karta for j,karta in enumerate(biale_karty.karty,1) if karta is not sr_bialy and j > pozycja_karty_sr and karta.klasa <= limit_klasy_bialy]
-        sojusznicy_czarnego = [karta for j,karta in enumerate(czarne_karty.karty,1) if karta is not sr_czarny and j > pozycja_karty_sr and karta.klasa <= limit_klasy_czarny]
-
-
-
-    bonus_flagi_bialy = policz_bonus_flag(biale_karty.karty)
+    bonus_flagi_biały = policz_bonus_flag(białe_karty.karty)
     bonus_flagi_czarny = policz_bonus_flag(czarne_karty.karty)
 
     # Ustalenie kolejności wykonywania SR
-    if sr_bialy is not None and sr_czarny is not None:
+    if sr_biały is not None and sr_czarny is not None:
 
         if rzut_k(2) == 1:
-            kolejnosc = ("bialy", "czarny")
+            kolejnosc = ("biały", "czarny")
         else:
-            kolejnosc = ("czarny", "bialy")
+            kolejnosc = ("czarny", "biały")
 
-    elif sr_bialy is not None:
-        kolejnosc = ("bialy",)
+    elif sr_biały is not None:
+        kolejnosc = ("biały",)
 
     else:
         kolejnosc = ("czarny",)
@@ -744,42 +817,50 @@ def wykonaj_zdolnosci_SR(statystyki,biale_karty,czarne_karty,pozycja_karty_sr):
     # Wykonanie SR w ustalonej kolejności
     for kolor in kolejnosc:
 
-        if kolor == "bialy":
+        if kolor == "biały":
 
-            pozycja_sr = biale_karty.karty.index(sr_bialy)
+            if statystyki["zdolnosci"][(sr_biały.id, sr_biały.kolor)]["zdolnosc1"] > 0: #jeżeli juz sie zamieniał to drugi raz sie nie zamienia
+                print('DEBUG drugi raz sie nie zamienia')
+                continue
+
+            pozycja_sr = białe_karty.karty.index(sr_biały)
             przeciwnik = czarne_karty.karty[pozycja_sr]
 
             kandydat,powod = Znajdz_Kandydata_do_zamiany(
-                sr_bialy,
+                sr_biały,
                 przeciwnik,
-                sojusznicy_bialego,
+                sojusznicy_białego,
                 sojusznicy_czarnego,
-                bonus_flagi_bialy,
+                bonus_flagi_biały,
                 bonus_flagi_czarny
             )
 
             if kandydat is not None:
-                pozycja_kandydata = biale_karty.karty.index(kandydat)
+                pozycja_kandydata = białe_karty.karty.index(kandydat)
                 #ZAMIANA
-                biale_karty.karty[pozycja_sr], biale_karty.karty[pozycja_kandydata] = (
-                    biale_karty.karty[pozycja_kandydata],
-                    biale_karty.karty[pozycja_sr]
+                białe_karty.karty[pozycja_sr], białe_karty.karty[pozycja_kandydata] = (
+                    białe_karty.karty[pozycja_kandydata],
+                    białe_karty.karty[pozycja_sr]
                 )
-                zarejestruj_uzycie_zdolnosci(statystyki, sr_bialy.id, sr_bialy.kolor)
+                zarejestruj_uzycie_zdolnosci(statystyki, sr_biały.id, sr_biały.kolor)
                 loguj("DEBUG SR: ZMIANA",powod," pozycja ", pozycja_sr + 1,"->", pozycja_kandydata + 1)
 
         else:
 
+            if statystyki["zdolnosci"][(sr_czarny.id, sr_czarny.kolor)]["zdolnosc1"] > 0:   #jeżeli juz sie zamieniał to drugi raz sie nie zamienia
+                print('DEBUG drugi raz sie nie zamienia')
+                continue
+
             pozycja_sr = czarne_karty.karty.index(sr_czarny)
-            przeciwnik = biale_karty.karty[pozycja_sr]
+            przeciwnik = białe_karty.karty[pozycja_sr]
 
             kandydat,powod = Znajdz_Kandydata_do_zamiany(
                 sr_czarny,
                 przeciwnik,
                 sojusznicy_czarnego,
-                sojusznicy_bialego,
+                sojusznicy_białego,
                 bonus_flagi_czarny,
-                bonus_flagi_bialy
+                bonus_flagi_biały
             )
 
             if kandydat is not None:
@@ -793,55 +874,57 @@ def wykonaj_zdolnosci_SR(statystyki,biale_karty,czarne_karty,pozycja_karty_sr):
 
 def wykonaj_zdolnosc_SP(
     statystyki,
-    biale_karty,
+    białe_karty,
     czarne_karty,
-    biale_zabite,
+    białe_zabite,
     czarne_zabite,
-    biale_zywe,
+    białe_zywe,
     czarne_zywe,
-    biale_aktywne,
+    białe_aktywne,
     czarne_aktywne
 ):
 
-    sp_bialy = znajdz_s(biale_karty,"SP")
+    sp_biały = znajdz_s(białe_karty,"SP")
     sp_czarny = znajdz_s(czarne_karty,"SP")
 
-    if sp_bialy is None and sp_czarny is None: # Jeżeli nie ma żadnego SP, nic nie robimy
+    if sp_biały is None and sp_czarny is None: # Jeżeli nie ma żadnego SP, nic nie robimy
         return 0,0
 
-    decyzja_bialy, decyzja_czarny,wrog_bialego_ginie,wrog_czarnego_ginie,korzysc_biala,korzysc_czarna = Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty,czarne_karty)
+    decyzja_biały, decyzja_czarny,wrog_białego_ginie,wrog_czarnego_ginie,korzysc_biała,korzysc_czarna = Czy_wykonac_zdolnosc_SP(sp_biały,sp_czarny,białe_karty,czarne_karty)
 
-    if decyzja_bialy:
-        zarejestruj_uzycie_zdolnosci(statystyki, sp_bialy.id, sp_bialy.kolor)
-        if wrog_bialego_ginie:
-            pozycja_sp = biale_karty.karty.index(sp_bialy)
+    if decyzja_biały:
+        zarejestruj_uzycie_zdolnosci(statystyki, sp_biały.id, sp_biały.kolor,1)
+        if wrog_białego_ginie:
+            pozycja_sp = białe_karty.karty.index(sp_biały)
             przeciwnik_sp = czarne_karty.karty[pozycja_sp]
             czarne_zabite.karty.append(przeciwnik_sp)
             czarne_karty.karty.remove(przeciwnik_sp)
-            loguj("DEBUG SP: MIŁOŚĆ się poświęca. Przeciwnik ginie. Kożyść=",korzysc_biala)
+            loguj("DEBUG SP: MIŁOŚĆ się poświęca. Przeciwnik ginie. Kożyść=",korzysc_biała)
+            zarejestruj_uzycie_zdolnosci(statystyki, sp_biały.id, sp_biały.kolor,2)
         else:
             czarne_zywe.dodaj(przeciwnik_sp)   #czarne dostają walkowera
             czarne_aktywne.dodaj(przeciwnik_sp)
-            loguj("DEBUG SP: MIŁOŚĆ się poświęca. Przeciwnik przezył. Kożyść=",korzysc_biala)
+            loguj("DEBUG SP: MIŁOŚĆ się poświęca. Przeciwnik przezył. Kożyść=",korzysc_biała)
 
-        bonus_bialy, _ = interpretuj_parametr(sp_bialy.wspolpraca_sila)
-        biale_zabite.karty.append(sp_bialy)
-        biale_karty.karty.remove(sp_bialy)
+        bonus_biały, _ = interpretuj_parametr(sp_biały.wspolpraca_sila)
+        białe_zabite.karty.append(sp_biały)
+        białe_karty.karty.remove(sp_biały)
     else:     
-        loguj("DEBUG SP: MIŁOŚĆ rezygnuje z poświęcenia. Kożyść=",korzysc_biala)
-        bonus_bialy=0
+        loguj("DEBUG SP: MIŁOŚĆ rezygnuje z poświęcenia. Kożyść=",korzysc_biała)
+        bonus_biały=0
         
     if decyzja_czarny:
-        zarejestruj_uzycie_zdolnosci(statystyki, sp_czarny.id, sp_czarny.kolor)
+        zarejestruj_uzycie_zdolnosci(statystyki, sp_czarny.id, sp_czarny.kolor,1)
         if wrog_czarnego_ginie:
             pozycja_sp = czarne_karty.karty.index(sp_czarny)
-            przeciwnik_sp = biale_karty.karty[pozycja_sp]
-            biale_zabite.karty.append(przeciwnik_sp)
-            biale_karty.karty.remove(przeciwnik_sp)
+            przeciwnik_sp = białe_karty.karty[pozycja_sp]
+            białe_zabite.karty.append(przeciwnik_sp)
+            białe_karty.karty.remove(przeciwnik_sp)
             loguj("DEBUG SP: WŁADZA8 się poświęca. Przeciwnik ginie. Kożyść=",korzysc_czarna)
+            zarejestruj_uzycie_zdolnosci(statystyki, sp_czarny.id, sp_czarny.kolor,2)
         else:
-            biale_zywe.dodaj(przeciwnik_sp)   #biale dostają walkowera
-            biale_aktywne.dodaj(przeciwnik_sp)
+            białe_zywe.dodaj(przeciwnik_sp)   #białe dostają walkowera
+            białe_aktywne.dodaj(przeciwnik_sp)
             loguj("DEBUG SP: WŁADZA8 się poświęca. Przeciwnik przezył. Kożyść=",korzysc_czarna)
         bonus_czarny, _ = interpretuj_parametr(sp_czarny.wspolpraca_sila)
         czarne_zabite.karty.append(sp_czarny)
@@ -850,22 +933,22 @@ def wykonaj_zdolnosc_SP(
         loguj("DEBUG SP: WLADZA8 rezygnuje z poświęcenia. Kożyść=",korzysc_czarna)
         bonus_czarny=0
 
-    return bonus_bialy,bonus_czarny
+    return bonus_biały,bonus_czarny
 
-def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
+def Czy_wykonac_zdolnosc_SP(sp_biały,sp_czarny,białe_karty, czarne_karty):
 
-    decyzja_bialy=False
+    decyzja_biały=False
     decyzja_czarny=False
-    wrog_bialego_ginie=False
+    wrog_białego_ginie=False
     wrog_czarnego_ginie=False
 
-    bonus_flagi_bialy = policz_bonus_flag(biale_karty.karty)
+    bonus_flagi_biały = policz_bonus_flag(białe_karty.karty)
     bonus_flagi_czarny = policz_bonus_flag(czarne_karty.karty)
 
     # Sojusznicy nie zmienią się w wyniku zamiany
-    sojusznicy_bialego = [
-        karta for karta in biale_karty.karty
-        if karta is not sp_bialy
+    sojusznicy_białego = [
+        karta for karta in białe_karty.karty
+        if karta is not sp_biały
     ]
 
     sojusznicy_czarnego = [
@@ -882,25 +965,25 @@ def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
         }
 
     # Ustalenie kolejności wykonywania SP
-    if sp_bialy is not None and sp_czarny is not None:
+    if sp_biały is not None and sp_czarny is not None:
 
-        pozycja_bialy = biale_karty.karty.index(sp_bialy)
+        pozycja_biały = białe_karty.karty.index(sp_biały)
         pozycja_czarny = czarne_karty.karty.index(sp_czarny)
 
-        if pozycja_bialy < pozycja_czarny:
-            kolejnosc = ("bialy", "czarny")
+        if pozycja_biały < pozycja_czarny:
+            kolejnosc = ("biały", "czarny")
 
-        elif pozycja_czarny < pozycja_bialy:
-            kolejnosc = ("czarny", "bialy")
+        elif pozycja_czarny < pozycja_biały:
+            kolejnosc = ("czarny", "biały")
 
         else:
             if rzut_k(2) == 1:
-                kolejnosc = ("bialy", "czarny")
+                kolejnosc = ("biały", "czarny")
             else:
-                kolejnosc = ("czarny", "bialy")
+                kolejnosc = ("czarny", "biały")
 
-    elif sp_bialy is not None:
-        kolejnosc = ("bialy",)
+    elif sp_biały is not None:
+        kolejnosc = ("biały",)
 
     else:
         kolejnosc = ("czarny",)
@@ -908,36 +991,36 @@ def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
     # Wykonanie SP w ustalonej kolejności
     for kolor in kolejnosc:
 
-        if kolor == "bialy":
+        if kolor == "biały":
 
-            X, Y = interpretuj_parametr(sp_bialy.wspolpraca_sila)
-            pozycja_sp = biale_karty.karty.index(sp_bialy)
+            X, Y = interpretuj_parametr(sp_biały.wspolpraca_sila)
+            pozycja_sp = białe_karty.karty.index(sp_biały)
             przeciwnik_sp = czarne_karty.karty[pozycja_sp]
-            prog = sp_bialy.klasa + 2
-            korzysc_biala = 0
+            prog = sp_biały.klasa + 2
+            korzysc_biała = 0
 
             if przeciwnik_sp.klasa <= Y: # Bezpośredni przeciwnik
-                korzysc_biala += 2
-                wrog_bialego_ginie=True
+                korzysc_biała += 2
+                wrog_białego_ginie=True
 
-            for i in range(len(sojusznicy_bialego)):  #  (zbior 1,2,3,4 bez pozycja_sp)  #petla po sojusznikach bialego
+            for i in range(len(sojusznicy_białego)):  #  (zbior 1,2,3,4 bez pozycja_sp)  #petla po sojusznikach białego
 
-                sojusznik=sojusznicy_bialego[i]
+                sojusznik=sojusznicy_białego[i]
                 wrog=czarne_karty.karty[sojusznik.index]
                 
-                wynik_bez_X=oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_bialy, bonus_flagi_czarny)
-                wynik_z_X  =oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_bialy, bonus_flagi_czarny-X)
+                wynik_bez_X=oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_biały, bonus_flagi_czarny)
+                wynik_z_X  =oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_biały, bonus_flagi_czarny-X)
 
                 przesuniecie = kolejnosc_wynikow[wynik_z_X] - kolejnosc_wynikow[wynik_bez_X]
         
                 if przesuniecie > 0:
-                    korzysc_biala += przesuniecie
+                    korzysc_biała += przesuniecie
 
                 if wrog.klasa == 5 and wynik_bez_X != "Z" and wynik_z_X == "Z":  #zabicie klasy 5
-                    korzysc_biala += 4
+                    korzysc_biała += 4
 
-            if korzysc_biala > prog:  #decyzja o poswieceniu
-                decyzja_bialy=True
+            if korzysc_biała > prog:  #decyzja o poswieceniu
+                decyzja_biały=True
 
         else:
 
@@ -947,7 +1030,7 @@ def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
 
             X, Y = interpretuj_parametr(sp_czarny.wspolpraca_sila)
             pozycja_sp = czarne_karty.karty.index(sp_czarny)
-            przeciwnik_sp = biale_karty.karty[pozycja_sp]
+            przeciwnik_sp = białe_karty.karty[pozycja_sp]
             prog = sp_czarny.klasa + 2
             korzysc_czarna = 0
 
@@ -958,10 +1041,10 @@ def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
             for i in range(len(sojusznicy_czarnego)):  #(zbior 1,2,3,4 bez pozycja_sp)  #petla po sojusznikach czarnego
 
                 sojusznik=sojusznicy_czarnego[i]
-                wrog=biale_karty.karty[sojusznik.index]
+                wrog=białe_karty.karty[sojusznik.index]
 
-                wynik_bez_X=oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_czarny, bonus_flagi_bialy)
-                wynik_z_X  =oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_czarny, bonus_flagi_bialy-X)
+                wynik_bez_X=oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_czarny, bonus_flagi_biały)
+                wynik_z_X  =oszacuj_wynik_walki_SP(sojusznik,wrog,bonus_flagi_czarny, bonus_flagi_biały-X)
 
                 przesuniecie = kolejnosc_wynikow[wynik_z_X] - kolejnosc_wynikow[wynik_bez_X]
         
@@ -974,17 +1057,17 @@ def Czy_wykonac_zdolnosc_SP(sp_bialy,sp_czarny,biale_karty, czarne_karty):
             if korzysc_czarna >= prog:  #decyzja o poswieceniu
                 decyzja_czarny=True
 
-    return decyzja_bialy, decyzja_czarny, wrog_bialego_ginie, wrog_czarnego_ginie,korzysc_biala,korzysc_czarna
+    return decyzja_biały, decyzja_czarny, wrog_białego_ginie, wrog_czarnego_ginie,korzysc_biała,korzysc_czarna
 
 def oszacuj_wynik_walki_SP(
-    karta_biala,
+    karta_biała,
     karta_czarna,
-    bonus_bialy,
+    bonus_biały,
     bonus_czarny
 ):
-    sila_biala = policz_sile_walki(karta_biala,bonus_bialy,False)
+    sila_biała = policz_sile_walki(karta_biała,bonus_biały,False)
     sila_czarna = policz_sile_walki(karta_czarna,bonus_czarny,False)
-    roznica = sila_biala - sila_czarna
+    roznica = sila_biała - sila_czarna
 
     if roznica >= 3:
         return "Z"
@@ -997,13 +1080,13 @@ def oszacuj_wynik_walki_SP(
     else:
         return "P"
 
-def Logowanie_koncowe(statystyki,biale_gotowe,czarne_gotowe,biale_odpoczywajace,czarne_odpoczywajace):
+def Logowanie_koncowe(statystyki,białe_gotowe,czarne_gotowe,białe_odpoczywajace,czarne_odpoczywajace):
     loguj("\nKarty Specjalne:")
     loguj("ŚMIERĆ żyje:",statystyki["Smierc_zyje"])
     loguj("ŁASKA żyje:",statystyki["Laska_zyje"])
 
     loguj("\nBiałe karty które przeżyły:")
-    for karta in biale_gotowe.karty + biale_odpoczywajace.karty:
+    for karta in białe_gotowe.karty + białe_odpoczywajace.karty:
         loguj(karta.id, karta.imie, karta.sila)
 
     loguj("\nCzarne karty które przeżyły:")
@@ -1018,17 +1101,42 @@ def policz_sile_walki(karta, bonus_areny, rzut_kostka=True):
         sila += rzut_k(4)
     return sila
 
-def zarejestruj_uzycie_zdolnosci(statystyki, id_karty, kolor, numer_zdolnosci=1):
+def zarejestruj_uzycie_zdolnosci(statystyki, id_karty, kolor, numer_zdolnosci=1,ile_razy=1):
     klucz = (id_karty, kolor)
-    if numer_zdolnosci == 1:
-        statystyki["zdolnosci"][klucz]["zdolnosc1"] += 1
-    elif numer_zdolnosci == 2:
-        statystyki["zdolnosci"][klucz]["zdolnosc2"] += 1
 
-def zarejestruj_wynik_karty(statystyki, karta_biala, karta_czarna, wynik):
-    klucz_bialy = (karta_biala.id, karta_biala.kolor)
+    print(
+        "DEBUG REJESTRACJA:",
+        id_karty,
+        kolor,
+        "zdolność:", numer_zdolnosci,
+        "ile razy:", ile_razy,
+        "stan:",
+        statystyki["zdolnosci"][klucz]
+    )
+
+    if numer_zdolnosci == 1:
+        if statystyki["zdolnosci"][klucz]["zdolnosc1"] is None:
+            traceback.print_stack(limit=8)
+            print(
+                f"BŁĄD: próba użycia zdolności 1 dla karty "
+                f"{id_karty} {kolor}, która jej nie posiada"
+            )
+            return
+        statystyki["zdolnosci"][klucz]["zdolnosc1"] += ile_razy
+    elif numer_zdolnosci == 2:
+        if statystyki["zdolnosci"][klucz]["zdolnosc2"] is None:
+            traceback.print_stack(limit=8)
+            print(
+                f"BŁĄD: próba użycia zdolności 2 dla karty "
+                f"{id_karty} {kolor}, która jej nie posiada"
+            )
+            return
+        statystyki["zdolnosci"][klucz]["zdolnosc2"] += ile_razy
+
+def zarejestruj_wynik_karty(statystyki, karta_biała, karta_czarna, wynik):
+    klucz_biały = (karta_biała.id, karta_biała.kolor)
     klucz_czarny = (karta_czarna.id, karta_czarna.kolor)
-    statystyki["wyniki_kart"][klucz_bialy][wynik] += 1
+    statystyki["wyniki_kart"][klucz_biały][wynik] += 1
     odwrotny_wynik = {
         "W": "P",
         "P": "W",

@@ -1,0 +1,6 @@
+licznik zdolnosci kart
+ZYCIE - zdolnosc nr 1 to ocenie przeciwnika, dolnosc nr 2 to zabicie śmierci
+MILOSC (SP) - zdolnosc nr 1 to poswiecenie, dolnosc nr 2 to zabicie przeciwnika
+
+zdolnosc Remisu (R) to zawsze zdolnosc nr 2
+

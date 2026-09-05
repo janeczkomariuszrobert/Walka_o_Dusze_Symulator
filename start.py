@@ -11,6 +11,7 @@ PRAWDOPODOBIENSTWO_ZARAZY = 0.25
 PRAWDOPODOBIENSTWO_LECZENIA = 0.25
 STARTOWY_KOSZT_ODNOWY = 2
 
+SCIEZKA_KART="DANE/karty_v1"
 
 os.makedirs("LOGI", exist_ok=True)
 czas_startu = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -21,61 +22,70 @@ statystyki = {
     "runda": 0,
     "zabite_pionki": 0,
     "zabite_klasa5": 0,
-    "akcje_bialy": AKCJE_STARTOWE,
+    "akcje_biały": AKCJE_STARTOWE,
     "akcje_czarny": AKCJE_STARTOWE,
     "chorzy_poprzednia":0,
     "chorzy_biezaca":0,
-    "punkty_arena_bialy":0,
+    "punkty_arena_biały":0,
     "zwyciezca":None,
-    "rzut_akcji_bialy": int(1 / PRAWDOPODOBIENSTWO_LECZENIA),
+    "rzut_akcji_biały": int(1 / PRAWDOPODOBIENSTWO_LECZENIA),
     "rzut_akcji_czarny": int(1 / PRAWDOPODOBIENSTWO_ZARAZY),
-    "koszt_odnowy_bialy": STARTOWY_KOSZT_ODNOWY,
+    "koszt_odnowy_biały": STARTOWY_KOSZT_ODNOWY,
     "koszt_odnowy_czarny": STARTOWY_KOSZT_ODNOWY,
     "Smierc_zyje": 'TAK',
     "Laska_zyje": 'TAK',
     "zdolnosci": {},
-    "wyniki_kart": {}
+    "wyniki_kart": {},
+
 }
 
-biale_gotowe = Talia()
-biale_odpoczywajace = Talia()
-biale_stos_smierci = Talia()
+białe_gotowe = Talia()
+białe_odpoczywajace = Talia()
+białe_stos_smierci = Talia()
 
 czarne_gotowe = Talia()
 czarne_odpoczywajace = Talia()
 czarne_stos_smierci = Talia()
 
-excel_na_json("DANE/karty_v1.xlsx","DANE/karty_v1.json")
+excel_na_json(SCIEZKA_KART)
 
-biale_gotowe.wczytaj("DANE/karty_v1.json", "biały")
-czarne_gotowe.wczytaj("DANE/karty_v1.json", "czarny")
+białe_gotowe.wczytaj(SCIEZKA_KART, "biały")
+czarne_gotowe.wczytaj(SCIEZKA_KART, "czarny")
 
-
-#deklaracja struktury licznika zdolnosci i wynikow. None oznacza braka zdolnosci
-for karta in biale_gotowe.karty + czarne_gotowe.karty:
+# Deklaracja struktury liczników zdolności i wyników (None oznacza brak zdolności)
+for karta in białe_gotowe.karty + czarne_gotowe.karty:
     klucz = (karta.id, karta.kolor)
-    if klucz==(14,"biały"): # ŻYCIE
-        statystyki["zdolnosci"][klucz] = {"zdolnosc1": 0,"zdolnosc2": 0}
-    elif klucz==(10,"biały"): # JEZUS
-        statystyki["zdolnosci"][klucz] = {"zdolnosc1": None,"zdolnosc2": None}
-    else:
-        statystyki["zdolnosci"][klucz] = {"zdolnosc1": 0,"zdolnosc2": None}
+    if karta.liczba_zdolnosci_walk == 0:
+        statystyki["zdolnosci"][klucz] = {
+            "zdolnosc1": None,
+            "zdolnosc2": None
+        }
+    elif karta.liczba_zdolnosci_walk == 1:
+        statystyki["zdolnosci"][klucz] = {
+            "zdolnosc1": 0,
+            "zdolnosc2": None
+        }
+    elif karta.liczba_zdolnosci_walk == 2:
+        statystyki["zdolnosci"][klucz] = {
+            "zdolnosc1": 0,
+            "zdolnosc2": 0
+        }
+    statystyki["wyniki_kart"][klucz] = {"liczba_walk": 0,"Z": 0,"W": 0,"R": 0,"P": 0,"U": 0,"wskrzesz": 0}    
 
-    statystyki["wyniki_kart"][klucz] = {"Z": 0,"W": 0,"R": 0,"P": 0,"U": 0}    
 
 
-
-
+BIALE_WYBRANE=[12, 3, 5, 2]
+CZARNE_WYBRANE=[19, 4, 7, 2]
 
 symuluj_testowa_arena(
     statystyki,
-    biale_gotowe,
+    białe_gotowe,
     czarne_gotowe,
-    biale_wybrane=[2, 3, 4, 5],
-    czarne_wybrane=[2, 3, 4, 5]
+    BIALE_WYBRANE,
+    CZARNE_WYBRANE
 )
 
-# biale_gotowe.potasuj()
+# białe_gotowe.potasuj()
 # czarne_gotowe.potasuj()
 
 # maksymalna_liczba_rund = 100
@@ -83,7 +93,7 @@ symuluj_testowa_arena(
 # while runda <= maksymalna_liczba_rund:
 
 #     if statystyki["zabite_klasa5"] >= 3:
-#         loguj("Koniec gry - Biały zrealizował cel")
+#         loguj("Koniec gry - biały zrealizował cel")
 #         break
 
 #     if statystyki["zabite_pionki"] >= 50:
@@ -94,28 +104,28 @@ symuluj_testowa_arena(
 #     loguj(f"RUNDA {runda}")
 
 #     #odnowa wymuszona
-#     if len(biale_gotowe) < LICZBA_SLOTOW_ARENY:
-#         odnowa(biale_gotowe,biale_odpoczywajace,statystyki,"bialy",runda,STARTOWY_KOSZT_ODNOWY+1)  #kara za wymuszoną odnowe
+#     if len(białe_gotowe) < LICZBA_SLOTOW_ARENY:
+#         odnowa(białe_gotowe,białe_odpoczywajace,statystyki,"biały",runda,STARTOWY_KOSZT_ODNOWY+1)  #kara za wymuszoną odnowe
 #     if len(czarne_gotowe) < LICZBA_SLOTOW_ARENY:
 #         odnowa(czarne_gotowe,czarne_odpoczywajace,statystyki,"czarny",runda,STARTOWY_KOSZT_ODNOWY+1)  
 
 
 #     # pobranie ręki
-#     biale_na_arenie = biale_gotowe.pobierz_reke(4)
+#     białe_na_arenie = białe_gotowe.pobierz_reke(4)
 #     czarne_na_arenie = czarne_gotowe.pobierz_reke(4)
     
 #     ### WALKA ###
-#     ustaw_puste_sloty(biale_na_arenie,czarne_na_arenie)  #przestaw kolejność jeżeli są walkowerowy - najslabsza karta 
-#     wynik,biale_zywe,czarne_zywe, biale_aktywne, czarne_aktywne, biale_zabite_runda, czarne_zabite_runda = walka_arena(biale_na_arenie,czarne_na_arenie, statystyki)
-#     statystyki['punkty_arena_bialy'] = policz_punkty_rundy(wynik)
-#     statystyki["zwyciezca"] = ustal_zwyciezce_rundy(statystyki['punkty_arena_bialy'],biale_aktywne,czarne_aktywne)
-#     loguj_stan_areny(biale_na_arenie,czarne_na_arenie,biale_aktywne,czarne_aktywne)
-#     loguj(f"Wynik: {''.join(wynik)} | Punkty Areny Białych: {statystyki['punkty_arena_bialy']} | Zwycięzca Rundy: {statystyki['zwyciezca']}")
+#     ustaw_puste_sloty(białe_na_arenie,czarne_na_arenie)  #przestaw kolejność jeżeli są walkowerowy - najslabsza karta 
+#     wynik,białe_zywe,czarne_zywe, białe_aktywne, czarne_aktywne, białe_zabite_runda, czarne_zabite_runda = walka_arena(białe_na_arenie,czarne_na_arenie, statystyki)
+#     statystyki['punkty_arena_biały'] = policz_punkty_rundy(wynik)
+#     statystyki["zwyciezca"] = ustal_zwyciezce_rundy(statystyki['punkty_arena_biały'],białe_aktywne,czarne_aktywne)
+#     loguj_stan_areny(białe_na_arenie,czarne_na_arenie,białe_aktywne,czarne_aktywne)
+#     loguj(f"Wynik: {''.join(wynik)} | Punkty Areny białych: {statystyki['punkty_arena_biały']} | Zwycięzca Rundy: {statystyki['zwyciezca']}")
 
-#     biale_aktywne.karty.sort(key=lambda karta: karta.klasa, reverse=True) #zaczynamy od najwyższej klasy
+#     białe_aktywne.karty.sort(key=lambda karta: karta.klasa, reverse=True) #zaczynamy od najwyższej klasy
 #     czarne_aktywne.karty.sort(key=lambda karta: karta.klasa, reverse=True)
 
-#     kolejnosc_graczy = ["bialy", "czarny"]
+#     kolejnosc_graczy = ["biały", "czarny"]
 
 #     if statystyki["zwyciezca"] == "czarny":
 #         kolejnosc_graczy.reverse()
@@ -125,11 +135,11 @@ symuluj_testowa_arena(
 
 #     ### AKCJE ###
 #     for gracz in kolejnosc_graczy:
-#         if gracz == "bialy":
-#             if len(biale_gotowe) < LICZBA_SLOTOW_ARENY:
-#                 odnowa(biale_gotowe,biale_odpoczywajace,statystyki,"bialy",runda,statystyki["koszt_odnowy_bialy"])
-#             wykonaj_akcje_kart(biale_aktywne,statystyki,"bialy")
-#             wykonaj_akcje_pionkow(statystyki,"bialy")
+#         if gracz == "biały":
+#             if len(białe_gotowe) < LICZBA_SLOTOW_ARENY:
+#                 odnowa(białe_gotowe,białe_odpoczywajace,statystyki,"biały",runda,statystyki["koszt_odnowy_biały"])
+#             wykonaj_akcje_kart(białe_aktywne,statystyki,"biały")
+#             wykonaj_akcje_pionkow(statystyki,"biały")
 #         else:
 #             rozlicz_choroby(statystyki) # z poprzedniej rundy
 #             if len(czarne_gotowe) < LICZBA_SLOTOW_ARENY:
@@ -140,18 +150,18 @@ symuluj_testowa_arena(
 #     ### SPRZATANIE PO WALKACH ###
 
 #     # żywe karty wracają do odpoczynku
-#     biale_odpoczywajace.przenies(biale_zywe)
+#     białe_odpoczywajace.przenies(białe_zywe)
 #     czarne_odpoczywajace.przenies(czarne_zywe)
 
 #     # martwe karty idą do stosu śmierci
-#     biale_stos_smierci.przenies(biale_zabite_runda)
+#     białe_stos_smierci.przenies(białe_zabite_runda)
 #     czarne_stos_smierci.przenies(czarne_zabite_runda)
 
 #     loguj(
 #         "Podsumowanie Rundy - Białe: ",
-#         'Got ', len(biale_gotowe),
-#         'Odp ', len(biale_odpoczywajace),
-#         'Martwe: ', len(biale_stos_smierci),
+#         'Got ', len(białe_gotowe),
+#         'Odp ', len(białe_odpoczywajace),
+#         'Martwe: ', len(białe_stos_smierci),
 #         'Zabite karty Spec: ', statystyki["zabite_klasa5"]
 #         )
 
@@ -173,12 +183,15 @@ symuluj_testowa_arena(
 #     statystyki["runda"] += 1
 
 #     #reset statystyk rundowych
-#     statystyki["akcje_bialy"] = AKCJE_STARTOWE
+#     statystyki["akcje_biały"] = AKCJE_STARTOWE
 #     statystyki["akcje_czarny"] = AKCJE_STARTOWE
 #     statystyki["rzut_akcji_czarny"] = int(1 / PRAWDOPODOBIENSTWO_ZARAZY)
-#     statystyki["rzut_akcji_bialy"] = int(1 / PRAWDOPODOBIENSTWO_LECZENIA)
-#     statystyki["koszt_odnowy_bialy"]=STARTOWY_KOSZT_ODNOWY
+#     statystyki["rzut_akcji_biały"] = int(1 / PRAWDOPODOBIENSTWO_LECZENIA)
+#     statystyki["koszt_odnowy_biały"]=STARTOWY_KOSZT_ODNOWY
 #     statystyki["koszt_odnowy_czarny"]=STARTOWY_KOSZT_ODNOWY
 
 ### KONIEC GRY ###
-#Logowanie_koncowe(statystyki,biale_gotowe,czarne_gotowe,biale_odpoczywajace,czarne_odpoczywajace)
+#Logowanie_koncowe(statystyki,białe_gotowe,czarne_gotowe,białe_odpoczywajace,czarne_odpoczywajace)
+zapisz_wyniki_csv(statystyki, białe_gotowe, czarne_gotowe, SCIEZKA_KART)
+
+pokaz_wyniki_csv(SCIEZKA_KART, BIALE_WYBRANE, CZARNE_WYBRANE)

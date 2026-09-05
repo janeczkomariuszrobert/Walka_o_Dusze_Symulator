@@ -6,6 +6,7 @@ class Karta:
     def __init__(
         self,
         id, imie, kolor, klasa, sila,
+        liczba_zdolnosci_walk,
         walka_sila_bonus,
         walka_zdolnosc,
         warunek_wlasny,
@@ -27,6 +28,7 @@ class Karta:
         self.kolor = kolor
         self.klasa = klasa
         self.sila = sila
+        self.liczba_zdolnosci_walk=liczba_zdolnosci_walk
         self.walka_sila_bonus = walka_sila_bonus
         self.walka_zdolnosc=walka_zdolnosc
         self.warunek_wlasny=warunek_wlasny
@@ -59,7 +61,8 @@ class Talia:
     def usun(self, karta):
         self.karty.remove(karta)     
 
-    def wczytaj(self, nazwa_pliku, kolor=None):
+    def wczytaj(self, sciezka, kolor=None):
+        nazwa_pliku = sciezka + ".json"
         with open(nazwa_pliku, "r", encoding="utf-8") as plik:
             dane = json.load(plik)
             # print("Liczba rekordów JSON:", len(dane))
@@ -72,6 +75,7 @@ class Talia:
                     element["kolor"],
                     element["klasa"],
                     element["sila"],
+                    element["liczba_zdolnosci_walk"],
                     element["walka_sila_bonus"],
                     element["walka_zdolnosc"],
                     element["warunek_wlasny"],
@@ -129,14 +133,15 @@ class Talia:
         for karta in inna_talia.karty:
             self.dodaj(karta)
 
+
 class StanAreny:
     def __init__(self):
-        self.remis_wygrywa_bialy = False
+        self.remis_wygrywa_biały = False
         self.remis_wygrywa_czarny = False
-        self.bonusy_bialy = []
+        self.bonusy_biały = []
         self.bonusy_czarny = []
-        self.zabity_bialy = False
+        self.zabity_biały = False
         self.zabity_czarny = False
 
-        self.limit_wspolpracy_bialy = 0 #zero oznacza bez limitu, 1 oznacza na jedną kartę
+        self.limit_wspolpracy_biały = 0 #zero oznacza bez limitu, 1 oznacza na jedną kartę
         self.limit_wspolpracy_czarny = 0
