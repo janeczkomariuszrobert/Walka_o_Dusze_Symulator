@@ -36,7 +36,7 @@ statystyki = {
     "Laska_zyje": 'TAK',
     "zdolnosci": {},
     "wyniki_kart": {},
-
+    "flagi": {}
 }
 
 białe_gotowe = Talia()
@@ -74,8 +74,8 @@ for karta in białe_gotowe.karty + czarne_gotowe.karty:
 
 
 
-BIALE_WYBRANE=[12, 3, 5, 2]
-CZARNE_WYBRANE=[19, 4, 7, 2]
+BIALE_WYBRANE=[14, 4, 5, 16]
+CZARNE_WYBRANE=[14, 8, 10, 15]
 
 symuluj_testowa_arena(
     statystyki,
@@ -111,9 +111,24 @@ symuluj_testowa_arena(
 
 
 #     # pobranie ręki
-#     białe_na_arenie = białe_gotowe.pobierz_reke(4)
-#     czarne_na_arenie = czarne_gotowe.pobierz_reke(4)
-    
+    # białe_na_arenie = białe_gotowe.pobierz_reke(4)
+    # czarne_na_arenie = czarne_gotowe.pobierz_reke(4)
+
+    # # zasada maksymalnie jednej karty klasy 5 w pierwszej rundzie
+    # if runda == 1:
+    #     while sum(karta.klasa == 5 for karta in białe_na_arenie) > 1:
+    #         for karta in białe_na_arenie:   #zwraca wszystkie karty z powrotem do talii gotowych
+    #             białe_gotowe.dodaj(karta)
+    #         białe_gotowe.potasuj()
+    #         białe_na_arenie = białe_gotowe.pobierz_reke(4)
+
+    #     while sum(karta.klasa == 5 for karta in czarne_na_arenie) > 1:
+    #         for karta in czarne_na_arenie: #zwraca wszystkie karty z powrotem do talii gotowych
+    #             czarne_gotowe.dodaj(karta)
+    #         czarne_gotowe.potasuj()
+    #         czarne_na_arenie = czarne_gotowe.pobierz_reke(4)
+
+
 #     ### WALKA ###
 #     ustaw_puste_sloty(białe_na_arenie,czarne_na_arenie)  #przestaw kolejność jeżeli są walkowerowy - najslabsza karta 
 #     wynik,białe_zywe,czarne_zywe, białe_aktywne, czarne_aktywne, białe_zabite_runda, czarne_zabite_runda = walka_arena(białe_na_arenie,czarne_na_arenie, statystyki)
@@ -189,6 +204,7 @@ symuluj_testowa_arena(
 #     statystyki["rzut_akcji_biały"] = int(1 / PRAWDOPODOBIENSTWO_LECZENIA)
 #     statystyki["koszt_odnowy_biały"]=STARTOWY_KOSZT_ODNOWY
 #     statystyki["koszt_odnowy_czarny"]=STARTOWY_KOSZT_ODNOWY
+#     statystyki["flagi"].clear()
 
 ### KONIEC GRY ###
 #Logowanie_koncowe(statystyki,białe_gotowe,czarne_gotowe,białe_odpoczywajace,czarne_odpoczywajace)

@@ -1,39 +1,39 @@
 ﻿id;kolor;imie;sila;zdolnosc1;zdolnosc2;liczba_walk;Z;W;R;P;U;wskrzesz
-1;biały;Anioł;1;0;;0;0;0;0;0;0;0
-2;biały;Anioł;2;1;;1;0;0;0;0;0;0
-3;biały;Anioł;3;0;;1;0;0;0;1;0;0
-4;biały;Anioł;4;;;0;0;0;0;0;0;0
-5;biały;Anioł;+K4;;;1;0;0;0;1;0;0
-6;biały;Cherub;5;0;;0;0;0;0;0;0;0
-7;biały;Cherub;5;0;;0;0;0;0;0;0;0
-8;biały;Cherub;6;0;;0;0;0;0;0;0;0
-9;biały;Cherub;7;0;;0;0;0;0;0;0;0
-10;biały;Cherub;8;0;;0;0;0;0;0;0;0
-11;biały;Serafin;9;0;;0;0;0;0;0;0;0
-12;biały;Serafin;10;0;;1;0;0;0;0;1;1
-13;biały;Serafin;11;;;0;0;0;0;0;0;0
-14;biały;Życie;12;0;0;0;0;0;0;0;0;0
-15;biały;Miłość;13;0;0;0;0;0;0;0;0;0
-16;biały;Archanioł Michał;14;0;;0;0;0;0;0;0;0
-17;biały;Duch Swięty;13;0;;0;0;0;0;0;0;0
-18;biały;Chwała Pańska;15;;;0;0;0;0;0;0;0
-19;biały;Jezus;99;;;0;0;0;0;0;0;0
-1;czarny;Zły Duch;1;0;;0;0;0;0;0;0;0
-2;czarny;Zły Duch;2;0;;1;0;0;0;0;0;0
-3;czarny;Zły Duch;3;0;;0;0;0;0;0;0;0
-4;czarny;Zły Duch;4;0;;1;0;1;0;0;0;0
-5;czarny;Zły Duch;+K4;0;0;0;0;0;0;0;0;0
-6;czarny;Władza;5;0;;0;0;0;0;0;0;0
-7;czarny;Władza;5;;;1;0;1;0;0;0;0
-8;czarny;Władza;6;0;;0;0;0;0;0;0;0
-9;czarny;Władza;7;0;;0;0;0;0;0;0;0
-10;czarny;Władza;8;0;0;0;0;0;0;0;0;0
-11;czarny;Zwierzchność;9;0;0;0;0;0;0;0;0;0
-12;czarny;Zwierzchność;10;0;;0;0;0;0;0;0;0
-13;czarny;Zwierzchność;11;;;0;0;0;0;0;0;0
-14;czarny;Śmierć;12;0;;0;0;0;0;0;0;0
-15;czarny;Królowa Niebios;13;0;;0;0;0;0;0;0;0
-16;czarny;Jeźdźcy Apokalipsy;14;0;;0;0;0;0;0;0;0
-17;czarny;Fałszywy Prorok;13;0;;0;0;0;0;0;0;0
-18;czarny;Lucyfer;13;0;;0;0;0;0;0;0;0
-19;czarny;Bestia;15;0;;1;1;0;0;0;0;0
+1.0;biały;Anioł;1;0;;0;0;0;0;0;0;0
+2.0;biały;Anioł;2;0;;0;0;0;0;0;0;0
+3.0;biały;Anioł;3;0;;0;0;0;0;0;0;0
+4.0;biały;Anioł;4;;;1;0;0;0;1;0;0
+5.0;biały;Anioł;+K4;;;1;0;0;0;1;0;0
+6.0;biały;Cherub;5;0;;0;0;0;0;0;0;0
+7.0;biały;Cherub;5;0;;0;0;0;0;0;0;0
+8.0;biały;Cherub;6;0;;0;0;0;0;0;0;0
+9.0;biały;Cherub;7;0;;0;0;0;0;0;0;0
+10.0;biały;Cherub;8;0;;0;0;0;0;0;0;0
+11.0;biały;Serafin;9;0;;0;0;0;0;0;0;0
+12.0;biały;Serafin;10;0;;0;0;0;0;0;0;0
+13.0;biały;Serafin;11;0;;0;0;0;0;0;0;0
+14.0;biały;Życie;12;0;;1;1;0;0;0;0;0
+15.0;biały;Miłość;13;0;0;0;0;0;0;0;0;0
+16.0;biały;Archanioł Michał;14;0;;1;0;1;0;0;0;0
+17.0;biały;Duch Swięty;13;0;;0;0;0;0;0;0;0
+18.0;biały;Chwała Pańska;16;;;0;0;0;0;0;0;0
+19.0;biały;Jezus;99;;;0;0;0;0;0;0;0
+1.0;czarny;Zły Duch;1;0;;0;0;0;0;0;0;0
+2.0;czarny;Zły Duch;2;0;;0;0;0;0;0;0;0
+3.0;czarny;Zły Duch;3;0;;0;0;0;0;0;0;0
+4.0;czarny;Zły Duch;4;0;;0;0;0;0;0;0;0
+5.0;czarny;Zły Duch;+K4;0;0;0;0;0;0;0;0;0
+6.0;czarny;Władza;5;;;0;0;0;0;0;0;0
+7.0;czarny;Władza;5;;;0;0;0;0;0;0;0
+8.0;czarny;Władza;6;0;;1;0;1;0;0;0;0
+9.0;czarny;Władza;7;0;;0;0;0;0;0;0;0
+10.0;czarny;Władza;8;0;;1;0;1;0;0;0;0
+11.0;czarny;Zwierzchność;9;0;;0;0;0;0;0;0;0
+12.0;czarny;Zwierzchność;10;0;0;0;0;0;0;0;0;0
+13.0;czarny;Zwierzchność;11;0;;0;0;0;0;0;0;0
+14.0;czarny;Śmierć;12;0;;1;0;0;0;0;1;0
+15.0;czarny;Królowa Niebios;13;1;;1;0;0;0;1;0;0
+16.0;czarny;Jeźdźcy Apokalipsy;14;0;;0;0;0;0;0;0;0
+17.0;czarny;Fałszywy Prorok;13;0;;0;0;0;0;0;0;0
+18.0;czarny;Lucyfer;13;0;;0;0;0;0;0;0;0
+19.0;czarny;Bestia;15;0;;0;0;0;0;0;0;0
